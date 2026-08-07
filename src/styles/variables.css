@@ -1,0 +1,56 @@
+/* Nykaa DSS Luxury Design Tokens & Theme Variables */
+:root {
+  /* Palette - Nykaa Signature Executive Palette */
+  --bg-dark: #0f0814;
+  --bg-surface: #180d21;
+  --bg-card: rgba(30, 16, 40, 0.75);
+  --bg-card-hover: rgba(45, 23, 60, 0.85);
+  --bg-card-solid: #21112e;
+  --bg-input: rgba(18, 9, 25, 0.8);
+  
+  --border-subtle: rgba(233, 30, 99, 0.15);
+  --border-glow: rgba(233, 30, 99, 0.4);
+  --border-active: #e91e63;
+
+  /* Brand Accent Colors */
+  --nykaa-pink: #e91e63;
+  --nykaa-magenta: #c2185b;
+  --nykaa-rose-gold: #f48fb1;
+  --nykaa-gold: #d4af37;
+  
+  /* Status Colors */
+  --status-success: #10b981;
+  --status-success-bg: rgba(16, 185, 129, 0.15);
+  --status-warning: #f59e0b;
+  --status-warning-bg: rgba(245, 158, 11, 0.15);
+  --status-danger: #ef4444;
+  --status-danger-bg: rgba(239, 68, 68, 0.15);
+  --status-info: #3b82f6;
+  --status-info-bg: rgba(59, 130, 246, 0.15);
+
+  /* Text Colors */
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+  --text-highlight: #ffffff;
+
+  /* Gradients */
+  --grad-nykaa: linear-gradient(135deg, #e91e63 0%, #9c27b0 100%);
+  --grad-gold: linear-gradient(135deg, #f48fb1 0%, #d4af37 100%);
+  --grad-card: linear-gradient(180deg, rgba(37, 18, 49, 0.8) 0%, rgba(20, 10, 28, 0.9) 100%);
+  --grad-glow: radial-gradient(circle at top right, rgba(233, 30, 99, 0.15), transparent 70%);
+
+  /* Shadows */
+  --shadow-card: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  --shadow-glow: 0 0 20px rgba(233, 30, 99, 0.25);
+  --shadow-gold-glow: 0 0 15px rgba(212, 175, 55, 0.2);
+
+  /* Typography & Layout */
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --sidebar-width: 270px;
+  --header-height: 72px;
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+}

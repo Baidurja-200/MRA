@@ -1,0 +1,1861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nykaa Insight Decision Support System (DSS)</title>
+  
+  <!-- Fonts & FontAwesome -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Chart.js for High Performance Canvas Charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root {
+      /* Soft Rose Pink & High-Visibility Light Theme */
+      --nykaa-pink: #ff5286;
+      --nykaa-pink-hover: #e03b70;
+      --nykaa-pink-light: #fff0f5;
+      --nykaa-pink-border: #ffd1dc;
+      
+      --bg-dark: #f8fafc;
+      --bg-surface: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-hover: #fafafa;
+      --border-color: #e2e8f0;
+      --border-highlight: #cbd5e1;
+      
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --text-dim: #64748b;
+      
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --info: #0284c7;
+      
+      --sidebar-width: 260px;
+      --header-height: 70px;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Light Theme Sidebar with Uploaded Nykaa Logo */
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: #ffffff;
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      z-index: 20;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.02);
+    }
+
+    .sidebar-brand {
+      height: auto;
+      min-height: 80px;
+      display: flex;
+      align-items: center;
+      padding: 14px 20px;
+      gap: 14px;
+      border-bottom: 1px solid var(--border-color);
+      background: #ffffff;
+    }
+
+    .uploaded-logo-img {
+      height: 60px;
+      max-width: 180px;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 8px rgba(233, 30, 99, 0.25));
+      transition: transform 0.3s ease;
+    }
+
+    .uploaded-logo-img:hover {
+      transform: scale(1.05);
+    }
+
+    .brand-title-wrap {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-title-wrap .brand-sub {
+      font-size: 11px;
+      color: var(--nykaa-pink);
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .nav-list {
+      list-style: none;
+      padding: 16px 12px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .nav-item {
+      margin-bottom: 4px;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 14px;
+      color: var(--text-muted);
+      text-decoration: none;
+      border-radius: var(--radius-sm);
+      font-size: 13.5px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .nav-link:hover {
+      background: var(--nykaa-pink-light);
+      color: var(--nykaa-pink);
+    }
+
+    .nav-link.active {
+      background: var(--nykaa-pink-light);
+      color: var(--nykaa-pink);
+      border-left: 3px solid var(--nykaa-pink);
+      font-weight: 700;
+    }
+
+    .nav-link i {
+      font-size: 16px;
+      width: 20px;
+      text-align: center;
+    }
+
+    .sidebar-footer {
+      padding: 16px;
+      border-top: 1px solid var(--border-color);
+      font-size: 11px;
+      color: var(--text-dim);
+      background: #fafafa;
+    }
+
+    /* Main Content Area */
+    .main-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .header {
+      height: var(--header-height);
+      background-color: #ffffff;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+    }
+
+    .header-title h2 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0f172a;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    .header-title p {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #f8fafc;
+      padding: 6px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+    }
+
+    .filter-group label {
+      font-size: 11px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .filter-group select {
+      background: transparent;
+      border: none;
+      color: #0f172a;
+      font-size: 13px;
+      outline: none;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .status-badge {
+      background: var(--nykaa-pink-light);
+      color: var(--nykaa-pink);
+      border: 1px solid var(--nykaa-pink-border);
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      background-color: var(--nykaa-pink);
+      border-radius: 50%;
+      box-shadow: 0 0 6px var(--nykaa-pink);
+    }
+
+    /* View Containers */
+    .content-area {
+      flex: 1;
+      padding: 24px 28px;
+      overflow-y: auto;
+      background: #f8fafc;
+    }
+
+    .view-pane {
+      display: none;
+      animation: fadeIn 0.25s ease-in-out forwards;
+    }
+
+    .view-pane.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Grid Layouts */
+    .grid-kpi {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .grid-3-1 {
+      display: grid;
+      grid-template-columns: 2.2fr 1fr;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    /* Clean Light Card Panels */
+    .card {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    .card-title i {
+      color: var(--nykaa-pink);
+    }
+
+    /* KPI Cards */
+    .kpi-card {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+      position: relative;
+      transition: transform 0.2s, border-color 0.2s;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+    }
+
+    .kpi-card:hover {
+      border-color: var(--nykaa-pink-border);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(255, 82, 134, 0.08);
+    }
+
+    .kpi-title {
+      font-size: 11.5px;
+      color: var(--text-dim);
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      letter-spacing: 0.3px;
+    }
+
+    .kpi-value {
+      font-size: 26px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 6px;
+      letter-spacing: -0.5px;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    .kpi-trend {
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .trend-up { color: var(--success); }
+    .trend-down { color: var(--danger); }
+
+    .kpi-icon {
+      position: absolute;
+      top: 18px;
+      right: 20px;
+      font-size: 22px;
+      color: var(--nykaa-pink);
+      opacity: 0.7;
+    }
+
+    /* Data Table Styles - High Contrast Light Mode */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .data-table th {
+      background: #f8fafc;
+      color: var(--text-dim);
+      font-weight: 700;
+      text-align: left;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .data-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border-color);
+      color: #334155;
+    }
+
+    .data-table tr:hover td {
+      background: #f1f5f9;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .badge-primary { background: var(--nykaa-pink-light); color: var(--nykaa-pink); border: 1px solid var(--nykaa-pink-border); }
+    .badge-success { background: #e6f4ea; color: #137333; }
+    .badge-warning { background: #fef7e0; color: #b06000; }
+    .badge-danger { background: #fce8e6; color: #c5221f; }
+
+    /* Form Controls */
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px 14px;
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      color: #0f172a;
+      font-size: 13px;
+      outline: none;
+      transition: border 0.2s;
+    }
+
+    .form-control:focus {
+      border-color: var(--nykaa-pink);
+      background: #ffffff;
+    }
+
+    .btn {
+      padding: 10px 22px;
+      background: var(--nykaa-pink);
+      color: #ffffff;
+      font-weight: 700;
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 13px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(255, 82, 134, 0.25);
+    }
+
+    .btn:hover {
+      background: var(--nykaa-pink-hover);
+      transform: translateY(-1px);
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #ffffff;
+      border: 1px solid var(--nykaa-pink);
+      border-left: 4px solid var(--nykaa-pink);
+      color: #0f172a;
+      padding: 14px 20px;
+      border-radius: var(--radius-sm);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+      z-index: 100;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* Star Schema ERD Visualizer */
+    .erd-container {
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      position: relative;
+    }
+
+    .fact-box {
+      background: #ffffff;
+      border: 2px solid var(--nykaa-pink);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      color: #0f172a;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(255, 82, 134, 0.15);
+    }
+
+    .dim-box {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      font-size: 12px;
+    }
+
+    .chart-container {
+      position: relative;
+      height: 280px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Light Theme Sidebar with User Uploaded Logo -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <!-- Uploaded Nykaa Script Logo -->
+      <img src="nykaa_logo.png" alt="Nykaa Logo" class="uploaded-logo-img">
+      <div class="brand-title-wrap">
+        <span class="brand-sub">INSIGHT DSS</span>
+      </div>
+    </div>
+    
+    <ul class="nav-list">
+      <li class="nav-item">
+        <a class="nav-link active" onclick="switchTab('executive')">
+          <i class="fa-solid fa-chart-line"></i>
+          <span>Executive Center</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" onclick="switchTab('sales')">
+          <i class="fa-solid fa-receipt"></i>
+          <span>Sales Intelligence</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" onclick="switchTab('customer')">
+          <i class="fa-solid fa-users"></i>
+          <span>Customer Intelligence</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" onclick="switchTab('product')">
+          <i class="fa-solid fa-boxes-packing"></i>
+          <span>Product Intelligence</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" onclick="switchTab('marketing')">
+          <i class="fa-solid fa-bullhorn"></i>
+          <span>Marketing Intelligence</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" onclick="switchTab('inventory')">
+          <i class="fa-solid fa-warehouse"></i>
+          <span>Inventory Intelligence</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" onclick="switchTab('data-entry')">
+          <i class="fa-solid fa-pen-to-square"></i>
+          <span>Data Entry Centre</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" onclick="switchTab('data-warehouse')">
+          <i class="fa-solid fa-database"></i>
+          <span>Data Warehouse</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" onclick="switchTab('about')">
+          <i class="fa-solid fa-circle-info"></i>
+          <span>About DSS & 24 KPIs</span>
+        </a>
+      </li>
+    </ul>
+
+    <div class="sidebar-footer">
+      <div>Enterprise Data Sync: <span style="color:var(--success); font-weight:700">Active</span></div>
+      <div style="margin-top:4px">Source: Live Google Spreadsheet</div>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <div class="main-wrapper">
+    
+    <!-- Top Header -->
+    <header class="header">
+      <div class="header-title">
+        <h2 id="page-title">Executive Command Center</h2>
+        <p id="page-subtitle">Strategic overview & high-level enterprise health metrics</p>
+      </div>
+
+      <div class="header-actions">
+        <div class="filter-group">
+          <label><i class="fa-regular fa-calendar"></i> Period:</label>
+          <select id="timeframe-select" onchange="onFilterChange()">
+            <option value="FY25-26">FY 2025-26 (Full Year)</option>
+            <option value="Q3">Q3 FY25-26</option>
+            <option value="MTD">MTD (Current Month)</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label><i class="fa-solid fa-location-dot"></i> Region:</label>
+          <select id="region-select" onchange="onFilterChange()">
+            <option value="All">All Regions (India)</option>
+            <option value="North">North Region</option>
+            <option value="South">South Region</option>
+            <option value="West">West Region</option>
+            <option value="East">East Region</option>
+          </select>
+        </div>
+
+        <div class="status-badge">
+          <div class="status-dot"></div>
+          24 KPIs Active
+        </div>
+      </div>
+    </header>
+
+    <!-- Content Area with 9 View Panes -->
+    <main class="content-area">
+
+      <!-- 1. Executive View Pane -->
+      <section id="pane-executive" class="view-pane active">
+        
+        <!-- KPI Cards Dynamic IDs -->
+        <div class="grid-kpi">
+          <div class="kpi-card">
+            <div class="kpi-title">Total Revenue (SUM Net_Sales)</div>
+            <div class="kpi-value" id="kpi-exec-revenue">₹485.6 Cr</div>
+            <div class="kpi-trend trend-up" id="kpi-exec-revenue-trend"><i class="fa-solid fa-arrow-up"></i> +18.4% YoY</div>
+            <i class="fa-solid fa-indian-rupee-sign kpi-icon"></i>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-title">Gross Profit (SUM Gross_Profit)</div>
+            <div class="kpi-value" id="kpi-exec-profit">₹240.8 Cr</div>
+            <div class="kpi-trend trend-up"><i class="fa-solid fa-arrow-up"></i> Evaluate profitability</div>
+            <i class="fa-solid fa-sack-dollar kpi-icon"></i>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-title">Gross Profit Margin (%)</div>
+            <div class="kpi-value" id="kpi-exec-margin">49.58%</div>
+            <div class="kpi-trend trend-up"><i class="fa-solid fa-arrow-up"></i> +1.8% vs benchmark</div>
+            <i class="fa-solid fa-percent kpi-icon"></i>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-title">Total Orders (COUNT Order_ID)</div>
+            <div class="kpi-value" id="kpi-exec-orders">1.42M</div>
+            <div class="kpi-trend trend-up"><i class="fa-solid fa-arrow-up"></i> Track order volume</div>
+            <i class="fa-solid fa-box-open kpi-icon"></i>
+          </div>
+        </div>
+
+        <!-- Row 2 KPIs -->
+        <div class="grid-kpi" style="margin-top:-10px">
+          <div class="kpi-card">
+            <div class="kpi-title">Active Customers</div>
+            <div class="kpi-value" id="kpi-exec-cust">4,606</div>
+            <div class="kpi-trend trend-up"><i class="fa-solid fa-arrow-up"></i> Active Customer Base</div>
+            <i class="fa-solid fa-user-check kpi-icon"></i>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Registered Customers</div>
+            <div class="kpi-value" id="kpi-exec-reg-cust">5,000</div>
+            <div class="kpi-trend trend-up"><i class="fa-solid fa-arrow-up"></i> Customer Base Size</div>
+            <i class="fa-solid fa-address-book kpi-icon"></i>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Return Rate (%)</div>
+            <div class="kpi-value" style="color:var(--success)" id="kpi-exec-return">2.40%</div>
+            <div class="kpi-trend trend-up"><i class="fa-solid fa-shield"></i> Low Return Volume</div>
+            <i class="fa-solid fa-rotate-left kpi-icon"></i>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Business Health Score</div>
+            <div class="kpi-value" style="color:var(--nykaa-pink)" id="kpi-exec-health">96.4 <span style="font-size:14px;font-weight:500">/ 100</span></div>
+            <div class="kpi-trend trend-up"><i class="fa-solid fa-arrow-up"></i> Optimal Rating</div>
+            <i class="fa-solid fa-heart-pulse kpi-icon"></i>
+          </div>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="grid-3-1">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><i class="fa-solid fa-chart-area"></i> Revenue Trend (SUM Net_Sales by Date - Fact_Sales + Dim_Date)</div>
+              <span class="badge badge-primary" id="badge-chart-region">All Regions</span>
+            </div>
+            <div class="chart-container">
+              <canvas id="chart-exec-revenue"></canvas>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><i class="fa-solid fa-brain"></i> AI Decision Engine</div>
+            </div>
+            <div style="font-size:13px; line-height:1.6" id="ai-engine-box">
+              <div style="background:#fff0f5; padding:12px; border-radius:6px; border-left:3px solid var(--nykaa-pink); margin-bottom:12px">
+                <strong style="color:var(--nykaa-pink)">Inventory Opportunity:</strong> High demand detected for <strong>Skincare Serums</strong>. Increase safety stock at West DC by +15%.
+              </div>
+              <div style="background:#e6f4ea; padding:12px; border-radius:6px; border-left:3px solid var(--success); margin-bottom:12px">
+                <strong style="color:#137333">Marketing Insight:</strong> <strong>Instagram & Google Ads</strong> driving 39.3% customer acquisition with 4.2x ROI.
+              </div>
+              <div style="background:#fef7e0; padding:12px; border-radius:6px; border-left:3px solid var(--warning)">
+                <strong style="color:#b06000">Price Optimization:</strong> <strong>Kay Beauty Foundation</strong> price elasticity allows +4% margin boost.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top Brands Breakdown -->
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><i class="fa-solid fa-award"></i> Revenue by Brand (Fact_Sales + Dim_Brand)</div>
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Brand Name</th>
+                  <th>Primary Category</th>
+                  <th>SKUs</th>
+                  <th>Est. Net Sales</th>
+                </tr>
+              </thead>
+              <tbody id="exec-brands-body">
+                <tr><td>Yardley London</td><td>Bath & Body</td><td>26</td><td><span class="badge badge-primary">₹73.8 Cr</span></td></tr>
+                <tr><td>Nykaa Cosmetics</td><td>Makeup</td><td>20</td><td><span class="badge badge-primary">₹67.0 Cr</span></td></tr>
+                <tr><td>Kay Beauty</td><td>Makeup</td><td>20</td><td><span class="badge badge-primary">₹65.5 Cr</span></td></tr>
+                <tr><td>Maybelline New York</td><td>Makeup</td><td>20</td><td><span class="badge badge-primary">₹58.7 Cr</span></td></tr>
+                <tr><td>Lakmé</td><td>Makeup</td><td>19</td><td><span class="badge badge-primary">₹55.3 Cr</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><i class="fa-solid fa-laptop-code"></i> Power BI Report Viewer Simulator</div>
+            </div>
+            <div style="background:#f8fafc; border:1px solid var(--border-color); border-radius:6px; padding:16px; text-align:center; height:220px; display:flex; flex-direction:column; justify-content:center; align-items:center">
+              <i class="fa-solid fa-chart-column" style="font-size:36px; color:var(--nykaa-pink); margin-bottom:10px"></i>
+              <div style="font-weight:700; color:#0f172a">Embedded Power BI Dashboard Workspace</div>
+              <div style="font-size:12px; color:var(--text-muted); margin-top:4px">Connecting directly to Azure Synapse / BigQuery Star Schema</div>
+              <button class="btn" style="margin-top:14px; padding:6px 14px; font-size:12px"><i class="fa-solid fa-expand"></i> Launch Full Screen BI Viewer</button>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- 2. Sales Intelligence Pane -->
+      <section id="pane-sales" class="view-pane">
+        <div class="grid-kpi">
+          <div class="kpi-card">
+            <div class="kpi-title">Total Revenue (SUM Net_Sales)</div>
+            <div class="kpi-value" id="kpi-sales-revenue">₹485.6 Cr</div>
+            <div class="kpi-trend trend-up"><i class="fa-solid fa-arrow-up"></i> +18.4% YoY</div>
+            <i class="fa-solid fa-money-bill-wave kpi-icon"></i>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Units Sold (SUM Quantity)</div>
+            <div class="kpi-value" id="kpi-sales-units">5.41M</div>
+            <div class="kpi-trend trend-up"><i class="fa-solid fa-arrow-up"></i> Measure Product Demand</div>
+            <i class="fa-solid fa-boxes-stacked kpi-icon"></i>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Average Order Value (AOV)</div>
+            <div class="kpi-value">₹1,845</div>
+            <div class="kpi-trend trend-up"><i class="fa-solid fa-arrow-up"></i> Basket Value Increase</div>
+            <i class="fa-solid fa-cart-shopping kpi-icon"></i>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Average Selling Price (ASP)</div>
+            <div class="kpi-value">₹897.58</div>
+            <div class="kpi-trend trend-up"><i class="fa-solid fa-arrow-up"></i> Pricing Analysis</div>
+            <i class="fa-solid fa-tag kpi-icon"></i>
+          </div>
+        </div>
+
+        <div class="grid-kpi" style="margin-top:-10px">
+          <div class="kpi-card">
+            <div class="kpi-title">Total Discount (SUM Discount)</div>
+            <div class="kpi-value" id="kpi-sales-discount">₹42.3 Cr</div>
+            <div class="kpi-trend trend-up"><i class="fa-solid fa-arrow-up"></i> Discount Effectiveness</div>
+            <i class="fa-solid fa-percent kpi-icon"></i>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Total Orders (COUNT Order_ID)</div>
+            <div class="kpi-value" id="kpi-sales-orders">1.42M</div>
+            <div class="kpi-trend trend-up"><i class="fa-solid fa-arrow-up"></i> Order Volume</div>
+            <i class="fa-solid fa-box-open kpi-icon"></i>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Gross Profit (SUM Gross_Profit)</div>
+            <div class="kpi-value" id="kpi-sales-profit">₹240.8 Cr</div>
+            <div class="kpi-trend trend-up"><i class="fa-solid fa-arrow-up"></i> 49.58% Margin</div>
+            <i class="fa-solid fa-chart-line kpi-icon"></i>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Revenue by Store</div>
+            <div class="kpi-value" id="kpi-sales-stores">25 Outlets</div>
+            <div class="kpi-trend trend-up"><i class="fa-solid fa-arrow-up"></i> Retail Comparison</div>
+            <i class="fa-solid fa-store kpi-icon"></i>
+          </div>
+        </div>
+
+        <div class="grid-3-1">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><i class="fa-solid fa-sliders"></i> Interactive What-If Price Elasticity & Margin Simulator</div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; font-size:13px">
+              <div>
+                <label class="form-label">Price Discount Adjustment (-10% to +20%): <span id="val-price" style="color:var(--nykaa-pink); font-weight:700">0%</span></label>
+                <input type="range" id="slider-price" min="-10" max="20" value="0" style="width:100%" oninput="updateSimulator()">
+                
+                <label class="form-label" style="margin-top:16px">Marketing Spend Change (0% to +50%): <span id="val-mktg" style="color:var(--nykaa-pink); font-weight:700">+10%</span></label>
+                <input type="range" id="slider-mktg" min="0" max="50" value="10" style="width:100%" oninput="updateSimulator()">
+              </div>
+              <div style="background:#fff0f5; padding:16px; border-radius:6px; border:1px solid var(--nykaa-pink-border)">
+                <div style="font-size:12px; color:var(--text-muted)">Simulated Revenue Impact:</div>
+                <div id="sim-rev" style="font-size:24px; font-weight:800; color:var(--success); margin:4px 0">₹514.2 Cr</div>
+                <div style="font-size:12px; color:var(--text-muted); margin-top:8px">Simulated Net Profit:</div>
+                <div id="sim-profit" style="font-size:20px; font-weight:700; color:var(--nykaa-pink)">₹254.9 Cr (49.5%)</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><i class="fa-solid fa-map-location-dot"></i> Revenue by Store (Fact_Sales + Dim_Store)</div>
+            </div>
+            <div class="chart-container">
+              <canvas id="chart-sales-region"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><i class="fa-solid fa-star"></i> Product Demand & Demand Matrix (Units Sold vs Net Sales)</div>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Product ID</th>
+                <th>SKU</th>
+                <th>Product Name</th>
+                <th>Brand</th>
+                <th>Category</th>
+                <th>MRP</th>
+                <th>Selling Price</th>
+                <th>Cost Price</th>
+                <th>Profit Margin</th>
+              </tr>
+            </thead>
+            <tbody id="sales-products-body">
+              <!-- Populated dynamically from dataset -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 3. Customer Intelligence Pane -->
+      <section id="pane-customer" class="view-pane">
+        <div class="grid-kpi">
+          <div class="kpi-card">
+            <div class="kpi-title">Registered Customers</div>
+            <div class="kpi-value" id="kpi-cust-reg">5,000</div>
+            <div class="kpi-trend trend-up"><i class="fa-solid fa-arrow-up"></i> Customer Base Size</div>
+            <i class="fa-solid fa-users kpi-icon"></i>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Active Customers</div>
+            <div class="kpi-value" id="kpi-cust-act">4,606</div>
+            <div class="kpi-trend trend-up"><i class="fa-solid fa-arrow-up"></i> 92.1% Active Rate</div>
+            <i class="fa-solid fa-user-check kpi-icon"></i>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Loyalty Enrolment</div>
+            <div class="kpi-value" id="kpi-cust-loyalty">2,240 <span style="font-size:14px;font-weight:500">(44.8%)</span></div>
+            <div class="kpi-trend trend-up"><i class="fa-solid fa-arrow-up"></i> Retention Strategy</div>
+            <i class="fa-solid fa-award kpi-icon"></i>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Average Rating</div>
+            <div class="kpi-value" style="color:var(--success)">4.65 ★</div>
+            <div class="kpi-trend trend-up"><i class="fa-solid fa-star"></i> Customer Satisfaction</div>
+            <i class="fa-solid fa-thumbs-up kpi-icon"></i>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><i class="fa-solid fa-pie-chart"></i> Preferred Channel (Dim_Customer)</div>
+            </div>
+            <div class="chart-container">
+              <canvas id="chart-cust-channel"></canvas>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><i class="fa-solid fa-chart-pie"></i> Loyalty Enrolment Distribution</div>
+            </div>
+            <div class="chart-container">
+              <canvas id="chart-cust-loyalty"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><i class="fa-solid fa-address-book"></i> Real Customer Database Directory</div>
+            <input type="text" id="cust-search" placeholder="Search by name, email, or source..." onkeyup="filterCustomers()" class="form-control" style="width:250px; padding:6px 12px">
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Customer ID</th>
+                <th>Name</th>
+                <th>Gender</th>
+                <th>Email</th>
+                <th>Geo ID</th>
+                <th>Acquisition Source</th>
+                <th>Preferred Channel</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="cust-table-body">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 4. Product Intelligence Pane -->
+      <section id="pane-product" class="view-pane">
+        <div class="grid-kpi">
+          <div class="kpi-card">
+            <div class="kpi-title">Total Active SKUs</div>
+            <div class="kpi-value">500</div>
+            <div class="kpi-trend trend-up"><i class="fa-solid fa-arrow-up"></i> Google Sheet Dataset</div>
+            <i class="fa-solid fa-box kpi-icon"></i>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Revenue by Brand</div>
+            <div class="kpi-value">40 Brands</div>
+            <div class="kpi-trend trend-up"><i class="fa-solid fa-arrow-up"></i> Brand Performance</div>
+            <i class="fa-solid fa-copyright kpi-icon"></i>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Revenue by Category</div>
+            <div class="kpi-value">6 Categories</div>
+            <div class="kpi-trend trend-up"><i class="fa-solid fa-arrow-up"></i> Category Planning</div>
+            <i class="fa-solid fa-layer-group kpi-icon"></i>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Catalog Gross Margin</div>
+            <div class="kpi-value">49.58%</div>
+            <div class="kpi-trend trend-up"><i class="fa-solid fa-arrow-up"></i> Mean Dataset Margin</div>
+            <i class="fa-solid fa-percent kpi-icon"></i>
+          </div>
+        </div>
+
+        <div class="grid-3-1">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><i class="fa-solid fa-chart-pie"></i> Revenue by Category (Fact_Sales + Dim_Category)</div>
+            </div>
+            <div class="chart-container">
+              <canvas id="chart-prod-category"></canvas>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><i class="fa-solid fa-list-check"></i> Subcategory Metrics</div>
+            </div>
+            <div style="font-size:13px; line-height:1.8">
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border-color); padding:6px 0">
+                <span>Lipstick & Lip Care</span> <strong style="color:var(--nykaa-pink)">98 SKUs</strong>
+              </div>
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border-color); padding:6px 0">
+                <span>Serums & Oils</span> <strong style="color:var(--nykaa-pink)">74 SKUs</strong>
+              </div>
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border-color); padding:6px 0">
+                <span>Moisturizers</span> <strong style="color:var(--nykaa-pink)">58 SKUs</strong>
+              </div>
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border-color); padding:6px 0">
+                <span>Shampoos & Cleaners</span> <strong style="color:var(--nykaa-pink)">45 SKUs</strong>
+              </div>
+              <div style="display:flex; justify-content:space-between; padding:6px 0">
+                <span>Perfumes & Deos</span> <strong style="color:var(--nykaa-pink)">27 SKUs</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><i class="fa-solid fa-table"></i> Complete Product Catalog Directory (from Spreadsheet)</div>
+            <input type="text" id="prod-search" placeholder="Search by SKU, Brand, or Product Name..." onkeyup="filterProducts()" class="form-control" style="width:280px; padding:6px 12px">
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>SKU</th>
+                <th>Product Name</th>
+                <th>Brand</th>
+                <th>Category</th>
+                <th>Subcategory</th>
+                <th>MRP</th>
+                <th>Selling Price</th>
+                <th>Cost Price</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="prod-table-body">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 5. Marketing Intelligence Pane -->
+      <section id="pane-marketing" class="view-pane">
+        <div class="grid-kpi">
+          <div class="kpi-card">
+            <div class="kpi-title">Total Marketing Campaigns</div>
+            <div class="kpi-value">100</div>
+            <div class="kpi-trend trend-up"><i class="fa-solid fa-arrow-up"></i> 9 Active Currently</div>
+            <i class="fa-solid fa-bullhorn kpi-icon"></i>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Revenue by Channel</div>
+            <div class="kpi-value">6 Channels</div>
+            <div class="kpi-trend trend-up"><i class="fa-solid fa-arrow-up"></i> Channel Optimisation</div>
+            <i class="fa-solid fa-chart-column kpi-icon"></i>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Campaign Performance</div>
+            <div class="kpi-value">3.85x ROI</div>
+            <div class="kpi-trend trend-up"><i class="fa-solid fa-arrow-up"></i> Campaign Comparison</div>
+            <i class="fa-solid fa-money-check-dollar kpi-icon"></i>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Acquisition Source</div>
+            <div class="kpi-value">10 Sources</div>
+            <div class="kpi-trend trend-up"><i class="fa-solid fa-arrow-up"></i> Marketing Effectiveness</div>
+            <i class="fa-solid fa-filter kpi-icon"></i>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><i class="fa-solid fa-chart-column"></i> Revenue by Channel (Fact_Sales)</div>
+            </div>
+            <div class="chart-container">
+              <canvas id="chart-mktg-channel"></canvas>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><i class="fa-solid fa-chart-pie"></i> Acquisition Source (Dim_Customer)</div>
+            </div>
+            <div class="chart-container">
+              <canvas id="chart-cust-source"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><i class="fa-solid fa-rectangle-ad"></i> Campaign Performance (Fact_Sales + Dim_Marketing)</div>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Marketing ID</th>
+                <th>Campaign Name</th>
+                <th>Type</th>
+                <th>Discount Value</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Channel</th>
+                <th>Objective</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="mktg-table-body">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 6. Inventory Intelligence Pane -->
+      <section id="pane-inventory" class="view-pane">
+        <div class="grid-kpi">
+          <div class="kpi-card">
+            <div class="kpi-title">Inventory Health (%)</div>
+            <div class="kpi-value" style="color:var(--success)">93.8%</div>
+            <div class="kpi-trend trend-up"><i class="fa-solid fa-arrow-up"></i> Inventory Quality</div>
+            <i class="fa-solid fa-circle-check kpi-icon"></i>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Stock Turnover Ratio</div>
+            <div class="kpi-value">4.60x</div>
+            <div class="kpi-trend trend-up"><i class="fa-solid fa-arrow-up"></i> Annualized</div>
+            <i class="fa-solid fa-rotate kpi-icon"></i>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Low Stock Products</div>
+            <div class="kpi-value" style="color:var(--warning)">18 SKUs</div>
+            <div class="kpi-trend trend-down"><i class="fa-solid fa-triangle-exclamation"></i> Replenishment Alert</div>
+            <i class="fa-solid fa-boxes-stacked kpi-icon"></i>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Out of Stock Products</div>
+            <div class="kpi-value" style="color:var(--danger)">4 SKUs</div>
+            <div class="kpi-trend trend-down"><i class="fa-solid fa-circle-xmark"></i> Critical Shortage Alert</div>
+            <i class="fa-solid fa-ban kpi-icon"></i>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><i class="fa-solid fa-truck-ramp-box"></i> Distribution Centers & Warehouses (from Spreadsheet)</div>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Geo ID</th>
+                <th>Region</th>
+                <th>State</th>
+                <th>City</th>
+                <th>Warehouse Name</th>
+                <th>Warehouse Code</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="wh-table-body">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 7. Data Entry Centre Pane -->
+      <section id="pane-data-entry" class="view-pane">
+        <div class="grid-3-1">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><i class="fa-solid fa-pen-to-square"></i> Real-time Enterprise Data Entry Form</div>
+              <select id="form-type-select" class="form-control" style="width:200px; padding:4px 8px" onchange="toggleDataEntryForm()">
+                <option value="product">Add New Product SKU</option>
+                <option value="customer">Add New Customer</option>
+              </select>
+            </div>
+
+            <!-- Product Form -->
+            <form id="form-add-product" onsubmit="handleProductSubmit(event)">
+              <div class="grid-2">
+                <div class="form-group">
+                  <label class="form-label">Product Name</label>
+                  <input type="text" id="p-name" class="form-control" placeholder="e.g. Nykaa Matte Lipstick" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Brand Name</label>
+                  <select id="p-brand" class="form-control">
+                    <option value="Nykaa Cosmetics">Nykaa Cosmetics</option>
+                    <option value="Kay Beauty">Kay Beauty</option>
+                    <option value="Maybelline New York">Maybelline New York</option>
+                    <option value="Lakmé">Lakmé</option>
+                    <option value="L'Oréal Paris">L'Oréal Paris</option>
+                  </select>
+                </div>
+              </div>
+              <div class="grid-2">
+                <div class="form-group">
+                  <label class="form-label">Category</label>
+                  <select id="p-cat" class="form-control">
+                    <option value="Makeup">Makeup</option>
+                    <option value="Skincare">Skincare</option>
+                    <option value="Haircare">Haircare</option>
+                    <option value="Bath & Body">Bath & Body</option>
+                    <option value="Fragrance">Fragrance</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Selling Price (₹)</label>
+                  <input type="number" id="p-price" class="form-control" placeholder="599" required>
+                </div>
+              </div>
+              <button type="submit" class="btn"><i class="fa-solid fa-plus"></i> Save SKU to Dataset</button>
+            </form>
+
+            <!-- Customer Form -->
+            <form id="form-add-customer" style="display:none" onsubmit="handleCustomerSubmit(event)">
+              <div class="grid-2">
+                <div class="form-group">
+                  <label class="form-label">First Name</label>
+                  <input type="text" id="c-fname" class="form-control" placeholder="Anya" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Last Name</label>
+                  <input type="text" id="c-lname" class="form-control" placeholder="Sharma" required>
+                </div>
+              </div>
+              <div class="grid-2">
+                <div class="form-group">
+                  <label class="form-label">Email Address</label>
+                  <input type="email" id="c-email" class="form-control" placeholder="anya@example.com" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Preferred Channel</label>
+                  <select id="c-channel" class="form-control">
+                    <option value="Mobile App">Mobile App</option>
+                    <option value="Website">Website</option>
+                    <option value="Retail Store">Retail Store</option>
+                  </select>
+                </div>
+              </div>
+              <button type="submit" class="btn"><i class="fa-solid fa-user-plus"></i> Add Customer Record</button>
+            </form>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><i class="fa-solid fa-clock-rotate-left"></i> Live Submission Log</div>
+            </div>
+            <div id="entry-log" style="font-size:12px; font-family:'JetBrains Mono', monospace; color:var(--text-muted); line-height:1.8">
+              <div>[SYSTEM]: Connected to In-Memory Data Store</div>
+              <div>[SYNC]: Google Sheet Schema Mapped (9 Tables)</div>
+              <div>[READY]: Awaiting user input...</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 8. Data Warehouse Pane -->
+      <section id="pane-data-warehouse" class="view-pane">
+        <div class="card" style="margin-bottom:24px">
+          <div class="card-header">
+            <div class="card-title"><i class="fa-solid fa-network-wired"></i> Nykaa DSS Star Schema Topology Explorer</div>
+            <span class="badge badge-primary">BigQuery / Snowflake Architecture</span>
+          </div>
+
+          <div class="erd-container">
+            <div style="display:flex; justify-content:center; margin-bottom:30px">
+              <div class="fact-box" style="width:300px">
+                <i class="fa-solid fa-database" style="font-size:24px; margin-bottom:6px; color:var(--nykaa-pink)"></i>
+                <div style="font-weight:700; font-size:15px">Fact_Sales_Transaction</div>
+                <div style="font-size:11px; color:var(--nykaa-pink); margin-top:4px">Measures: Quantity, Amount, Discount, Cost, Margin</div>
+              </div>
+            </div>
+
+            <div class="grid-3">
+              <div class="dim-box">
+                <strong style="color:var(--nykaa-pink)"><i class="fa-solid fa-table"></i> Dim_Product</strong>
+                <div style="color:var(--text-dim); margin-top:4px">500 SKUs | Brand, Category, MRP, Cost Price</div>
+              </div>
+              <div class="dim-box">
+                <strong style="color:var(--nykaa-pink)"><i class="fa-solid fa-table"></i> Dim_Customer</strong>
+                <div style="color:var(--text-dim); margin-top:4px">5,000 Customers | Geo, Source, Channel</div>
+              </div>
+              <div class="dim-box">
+                <strong style="color:var(--nykaa-pink)"><i class="fa-solid fa-table"></i> Dim_Date</strong>
+                <div style="color:var(--text-dim); margin-top:4px">365 Days | Festival, Season, Sale Event</div>
+              </div>
+              <div class="dim-box">
+                <strong style="color:var(--nykaa-pink)"><i class="fa-solid fa-table"></i> Dim_Store</strong>
+                <div style="color:var(--text-dim); margin-top:4px">25 Stores | Format, Location, Size sqft</div>
+              </div>
+              <div class="dim-box">
+                <strong style="color:var(--nykaa-pink)"><i class="fa-solid fa-table"></i> Dim_Geo</strong>
+                <div style="color:var(--text-dim); margin-top:4px">12 Cities | Region, State, Warehouse DC</div>
+              </div>
+              <div class="dim-box">
+                <strong style="color:var(--nykaa-pink)"><i class="fa-solid fa-table"></i> Dim_Marketing</strong>
+                <div style="color:var(--text-dim); margin-top:4px">100 Campaigns | Type, Channel, Discount</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 9. About DSS Pane & 24 KPIs Catalogue -->
+      <section id="pane-about" class="view-pane">
+        <div class="card" style="margin-bottom:24px">
+          <div class="card-header">
+            <div class="card-title"><i class="fa-solid fa-circle-info"></i> Nykaa Decision Support System Documentation</div>
+          </div>
+          <div style="font-size:14px; line-height:1.7; color:#334155">
+            <p><strong>System Objective:</strong> The Nykaa Insight Decision Support System (DSS) is an enterprise analytical web application designed for executive leadership, marketing strategists, category managers, and supply chain operators. It unifies omnichannel sales data, customer behavior metrics, marketing performance, and inventory health into a high-visibility, crisp analytical dashboard.</p>
+            <br>
+            <p><strong>Data Foundation:</strong> Fully integrated with the official multi-tab Nykaa dataset, incorporating Date Dimensions (FY25-26), Geographic Warehouses, Physical Store Networks, 40+ Brands, 500 Product SKUs, 100 Marketing Campaigns, and 5,000 Customer Demographics.</p>
+          </div>
+        </div>
+
+        <!-- Master 24 KPI Catalogue Table -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><i class="fa-solid fa-table-list"></i> Master 24 Key Performance Indicators (KPI) Specification Catalogue</div>
+            <span class="badge badge-primary">24 / 24 Defined & Mapped</span>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>KPI Metric Name</th>
+                <th>Calculation Logic</th>
+                <th>Warehouse Source Table</th>
+                <th>Dashboard Location</th>
+                <th>Business Decision Utility</th>
+                <th>Visual Type</th>
+                <th>Current Value</th>
+              </tr>
+            </thead>
+            <tbody id="kpi-master-body">
+              <!-- Dynamically populated 24 KPIs -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast">
+    <i class="fa-solid fa-circle-check" style="font-size:18px; color:var(--nykaa-pink)"></i>
+    <span id="toast-message">Record saved successfully!</span>
+  </div>
+
+  <!-- Embedded Datasets & JavaScript Engine -->
+  <script>
+    // Real Datasets loaded from Google Spreadsheet
+    const productsData = [{"Product_ID": "PRD0001", "SKU": "SKU00001", "Brand_Name": "Nykaa Cosmetics", "Category_Name": "Makeup", "Subcategory_Name": "Lipstick", "Product_Name": "Nykaa Matte To Last Liquid Lipstick", "Variant": "Chai", "MRP": "599", "Selling_Price": 539, "Cost_Price": 275, "Status": "Active"}, {"Product_ID": "PRD0002", "SKU": "SKU00002", "Brand_Name": "Nykaa Cosmetics", "Category_Name": "Makeup", "Subcategory_Name": "Lipstick", "Product_Name": "Nykaa Matte To Last Liquid Lipstick", "Variant": "Maharani", "MRP": "599", "Selling_Price": 539, "Cost_Price": 275, "Status": "Active"}, {"Product_ID": "PRD0003", "SKU": "SKU00003", "Brand_Name": "Nykaa Cosmetics", "Category_Name": "Makeup", "Subcategory_Name": "Lipstick", "Product_Name": "Nykaa Matte To Last Liquid Lipstick", "Variant": "Bombae", "MRP": "599", "Selling_Price": 539, "Cost_Price": 275, "Status": "Active"}, {"Product_ID": "PRD0004", "SKU": "SKU00004", "Brand_Name": "Nykaa Cosmetics", "Category_Name": "Makeup", "Subcategory_Name": "Lipstick", "Product_Name": "Nykaa Matte To Last Liquid Lipstick", "Variant": "Jhumki", "MRP": "599", "Selling_Price": 539, "Cost_Price": 275, "Status": "Active"}, {"Product_ID": "PRD0005", "SKU": "SKU00005", "Brand_Name": "Nykaa Cosmetics", "Category_Name": "Makeup", "Subcategory_Name": "Lipstick", "Product_Name": "Nykaa Matte To Last Liquid Lipstick", "Variant": "Madras Kaapi", "MRP": "599", "Selling_Price": 539, "Cost_Price": 275, "Status": "Active"}, {"Product_ID": "PRD0006", "SKU": "SKU00006", "Brand_Name": "Nykaa Cosmetics", "Category_Name": "Makeup", "Subcategory_Name": "Lipstick", "Product_Name": "Nykaa Matte To Last Liquid Lipstick", "Variant": "Kashi", "MRP": "599", "Selling_Price": 539, "Cost_Price": 275, "Status": "Active"}, {"Product_ID": "PRD0007", "SKU": "SKU00007", "Brand_Name": "Nykaa Cosmetics", "Category_Name": "Makeup", "Subcategory_Name": "Foundation", "Product_Name": "Nykaa SkinShield Anti-Pollution Foundation", "Variant": "Beige 03", "MRP": "799", "Selling_Price": 719, "Cost_Price": 365, "Status": "Active"}, {"Product_ID": "PRD0008", "SKU": "SKU00008", "Brand_Name": "Nykaa Cosmetics", "Category_Name": "Makeup", "Subcategory_Name": "Foundation", "Product_Name": "Nykaa SkinShield Anti-Pollution Foundation", "Variant": "Warm Sand 04", "MRP": "799", "Selling_Price": 719, "Cost_Price": 365, "Status": "Active"}, {"Product_ID": "PRD0009", "SKU": "SKU00009", "Brand_Name": "Nykaa Cosmetics", "Category_Name": "Makeup", "Subcategory_Name": "Primer", "Product_Name": "Nykaa Prep Me Up Face Primer", "Variant": "Classic", "MRP": "699", "Selling_Price": 629, "Cost_Price": 320, "Status": "Active"}, {"Product_ID": "PRD0010", "SKU": "SKU00010", "Brand_Name": "Nykaa Cosmetics", "Category_Name": "Makeup", "Subcategory_Name": "Mascara", "Product_Name": "Nykaa Black Magic Mascara", "Variant": "Intense Black", "MRP": "599", "Selling_Price": 539, "Cost_Price": 275, "Status": "Active"}, {"Product_ID": "PRD0011", "SKU": "SKU00011", "Brand_Name": "Nykaa Cosmetics", "Category_Name": "Makeup", "Subcategory_Name": "Eyeliner", "Product_Name": "Nykaa Black Magic Liquid Eyeliner", "Variant": "Black", "MRP": "399", "Selling_Price": 359, "Cost_Price": 180, "Status": "Active"}, {"Product_ID": "PRD0012", "SKU": "SKU00012", "Brand_Name": "Nykaa Cosmetics", "Category_Name": "Makeup", "Subcategory_Name": "Kajal", "Product_Name": "Nykaa Black Magic Kajal", "Variant": "Black", "MRP": "299", "Selling_Price": 269, "Cost_Price": 135, "Status": "Active"}, {"Product_ID": "PRD0013", "SKU": "SKU00013", "Brand_Name": "Nykaa Cosmetics", "Category_Name": "Makeup", "Subcategory_Name": "Blush", "Product_Name": "Nykaa Get Cheeky Blush", "Variant": "Rosy Pink", "MRP": "649", "Selling_Price": 589, "Cost_Price": 300, "Status": "Active"}, {"Product_ID": "PRD0014", "SKU": "SKU00014", "Brand_Name": "Nykaa Cosmetics", "Category_Name": "Makeup", "Subcategory_Name": "Highlighter", "Product_Name": "Nykaa Strobe & Glow Highlighter", "Variant": "Champagne", "MRP": "749", "Selling_Price": 679, "Cost_Price": 340, "Status": "Active"}, {"Product_ID": "PRD0015", "SKU": "SKU00015", "Brand_Name": "Nykaa Cosmetics", "Category_Name": "Makeup", "Subcategory_Name": "Concealer", "Product_Name": "Nykaa SKINgenius Concealer", "Variant": "Medium", "MRP": "599", "Selling_Price": 539, "Cost_Price": 275, "Status": "Active"}, {"Product_ID": "PRD0016", "SKU": "SKU00016", "Brand_Name": "Nykaa Cosmetics", "Category_Name": "Makeup", "Subcategory_Name": "Compact", "Product_Name": "Nykaa All Day Matte Compact", "Variant": "Ivory", "MRP": "499", "Selling_Price": 449, "Cost_Price": 225, "Status": "Active"}, {"Product_ID": "PRD0017", "SKU": "SKU00017", "Brand_Name": "Nykaa Cosmetics", "Category_Name": "Makeup", "Subcategory_Name": "Lipstick", "Product_Name": "Nykaa So Creme Creamy Matte Lipstick", "Variant": "Break A Leg", "MRP": "499", "Selling_Price": 449, "Cost_Price": 225, "Status": "Active"}, {"Product_ID": "PRD0018", "SKU": "SKU00018", "Brand_Name": "Nykaa Cosmetics", "Category_Name": "Makeup", "Subcategory_Name": "Lipstick", "Product_Name": "Nykaa So Matte Mini Lipstick", "Variant": "Scarlet Siren", "MRP": "249", "Selling_Price": 224, "Cost_Price": 110, "Status": "Active"}, {"Product_ID": "PRD0019", "SKU": "SKU00019", "Brand_Name": "Nykaa Cosmetics", "Category_Name": "Makeup", "Subcategory_Name": "Mascara", "Product_Name": "Nykaa Lash Talk Mascara", "Variant": "Black", "MRP": "549", "Selling_Price": 494, "Cost_Price": 250, "Status": "Active"}, {"Product_ID": "PRD0020", "SKU": "SKU00020", "Brand_Name": "Nykaa Cosmetics", "Category_Name": "Makeup", "Subcategory_Name": "Eyeliner", "Product_Name": "Nykaa Graphic Ink Eyeliner", "Variant": "Matte Black", "MRP": "449", "Selling_Price": 404, "Cost_Price": 205, "Status": "Active"}, {"Product_ID": "PRD0021", "SKU": "SKU00021", "Brand_Name": "Nykaa Naturals", "Category_Name": "Skincare", "Subcategory_Name": "Face Wash", "Product_Name": "Nykaa Naturals Tea Tree Face Wash", "Variant": "Tea Tree", "MRP": "349", "Selling_Price": 314, "Cost_Price": 155, "Status": "Active"}, {"Product_ID": "PRD0022", "SKU": "SKU00022", "Brand_Name": "Nykaa Naturals", "Category_Name": "Skincare", "Subcategory_Name": "Moisturizer", "Product_Name": "Nykaa Naturals Aloe Vera Gel", "Variant": "Aloe Vera", "MRP": "299", "Selling_Price": 269, "Cost_Price": 135, "Status": "Active"}, {"Product_ID": "PRD0023", "SKU": "SKU00023", "Brand_Name": "Nykaa Naturals", "Category_Name": "Skincare", "Subcategory_Name": "Serum", "Product_Name": "Nykaa Naturals Vitamin C Serum", "Variant": "Vitamin C", "MRP": "599", "Selling_Price": 539, "Cost_Price": 275, "Status": "Active"}, {"Product_ID": "PRD0024", "SKU": "SKU00024", "Brand_Name": "Nykaa Naturals", "Category_Name": "Skincare", "Subcategory_Name": "Sunscreen", "Product_Name": "Nykaa Naturals Sunscreen SPF50", "Variant": "SPF50", "MRP": "499", "Selling_Price": 449, "Cost_Price": 225, "Status": "Active"}, {"Product_ID": "PRD0025", "SKU": "SKU00025", "Brand_Name": "Nykaa Naturals", "Category_Name": "Skincare", "Subcategory_Name": "Toner", "Product_Name": "Nykaa Naturals Rose Water Toner", "Variant": "Rose", "MRP": "299", "Selling_Price": 269, "Cost_Price": 135, "Status": "Active"}, {"Product_ID": "PRD0026", "SKU": "SKU00026", "Brand_Name": "Nykaa Naturals", "Category_Name": "Skincare", "Subcategory_Name": "Face Mask", "Product_Name": "Nykaa Naturals Neem Face Mask", "Variant": "Neem", "MRP": "399", "Selling_Price": 359, "Cost_Price": 180, "Status": "Active"}, {"Product_ID": "PRD0027", "SKU": "SKU00027", "Brand_Name": "Nykaa Naturals", "Category_Name": "Skincare", "Subcategory_Name": "Eye Cream", "Product_Name": "Nykaa Naturals Under Eye Cream", "Variant": "Cucumber", "MRP": "499", "Selling_Price": 449, "Cost_Price": 225, "Status": "Active"}, {"Product_ID": "PRD0028", "SKU": "SKU00028", "Brand_Name": "Nykaa Naturals", "Category_Name": "Skincare", "Subcategory_Name": "Night Cream", "Product_Name": "Nykaa Naturals Night Repair Cream", "Variant": "Argan Oil", "MRP": "649", "Selling_Price": 584, "Cost_Price": 295, "Status": "Active"}, {"Product_ID": "PRD0029", "SKU": "SKU00029", "Brand_Name": "Nykaa Naturals", "Category_Name": "Skincare", "Subcategory_Name": "Lip Care", "Product_Name": "Nykaa Naturals Lip Balm", "Variant": "Strawberry", "MRP": "199", "Selling_Price": 179, "Cost_Price": 90, "Status": "Active"}, {"Product_ID": "PRD0030", "SKU": "SKU00030", "Brand_Name": "Nykaa Naturals", "Category_Name": "Skincare", "Subcategory_Name": "Exfoliator", "Product_Name": "Nykaa Naturals Walnut Face Scrub", "Variant": "Walnut", "MRP": "349", "Selling_Price": 314, "Cost_Price": 155, "Status": "Active"}, {"Product_ID": "PRD0031", "SKU": "SKU00031", "Brand_Name": "Nykaa Wanderlust", "Category_Name": "Fragrance", "Subcategory_Name": "Perfume", "Product_Name": "Nykaa Wanderlust Eau De Parfum", "Variant": "Sicily", "MRP": "1399", "Selling_Price": 1259, "Cost_Price": 650, "Status": "Active"}, {"Product_ID": "PRD0032", "SKU": "SKU00032", "Brand_Name": "Nykaa Wanderlust", "Category_Name": "Fragrance", "Subcategory_Name": "Perfume", "Product_Name": "Nykaa Wanderlust Eau De Parfum", "Variant": "Tokyo", "MRP": "1399", "Selling_Price": 1259, "Cost_Price": 650, "Status": "Active"}, {"Product_ID": "PRD0033", "SKU": "SKU00033", "Brand_Name": "Nykaa Wanderlust", "Category_Name": "Fragrance", "Subcategory_Name": "Body Mist", "Product_Name": "Nykaa Wanderlust Body Mist", "Variant": "Sicily", "MRP": "699", "Selling_Price": 629, "Cost_Price": 320, "Status": "Active"}, {"Product_ID": "PRD0034", "SKU": "SKU00034", "Brand_Name": "Nykaa Wanderlust", "Category_Name": "Fragrance", "Subcategory_Name": "Body Mist", "Product_Name": "Nykaa Wanderlust Body Mist", "Variant": "Hawaii", "MRP": "699", "Selling_Price": 629, "Cost_Price": 320, "Status": "Active"}, {"Product_ID": "PRD0035", "SKU": "SKU00035", "Brand_Name": "Nykaa Wanderlust", "Category_Name": "Bath & Body", "Subcategory_Name": "Body Wash", "Product_Name": "Nykaa Wanderlust Shower Gel", "Variant": "Japanese Cherry Blossom", "MRP": "549", "Selling_Price": 494, "Cost_Price": 250, "Status": "Active"}, {"Product_ID": "PRD0036", "SKU": "SKU00036", "Brand_Name": "Nykaa Wanderlust", "Category_Name": "Bath & Body", "Subcategory_Name": "Body Lotion", "Product_Name": "Nykaa Wanderlust Body Lotion", "Variant": "Sicily", "MRP": "599", "Selling_Price": 539, "Cost_Price": 275, "Status": "Active"}, {"Product_ID": "PRD0037", "SKU": "SKU00037", "Brand_Name": "Nykaa Wanderlust", "Category_Name": "Bath & Body", "Subcategory_Name": "Body Butter", "Product_Name": "Nykaa Wanderlust Body Butter", "Variant": "Hawaii", "MRP": "699", "Selling_Price": 629, "Cost_Price": 320, "Status": "Active"}, {"Product_ID": "PRD0038", "SKU": "SKU00038", "Brand_Name": "Nykaa Wanderlust", "Category_Name": "Bath & Body", "Subcategory_Name": "Hand Cream", "Product_Name": "Nykaa Wanderlust Hand Cream", "Variant": "Tokyo", "MRP": "299", "Selling_Price": 269, "Cost_Price": 135, "Status": "Active"}, {"Product_ID": "PRD0039", "SKU": "SKU00039", "Brand_Name": "Nykaa Wanderlust", "Category_Name": "Bath & Body", "Subcategory_Name": "Foot Cream", "Product_Name": "Nykaa Wanderlust Foot Cream", "Variant": "London", "MRP": "349", "Selling_Price": 314, "Cost_Price": 155, "Status": "Active"}, {"Product_ID": "PRD0040", "SKU": "SKU00040", "Brand_Name": "Nykaa Wanderlust", "Category_Name": "Fragrance", "Subcategory_Name": "Perfume", "Product_Name": "Nykaa Wanderlust Eau De Parfum", "Variant": "Paris", "MRP": "1399", "Selling_Price": 1259, "Cost_Price": 650, "Status": "Active"}, {"Product_ID": "PRD0041", "SKU": "SKU00041", "Brand_Name": "Kay Beauty", "Category_Name": "Makeup", "Subcategory_Name": "Foundation", "Product_Name": "Kay Beauty Hydrating Foundation", "Variant": "120Y Light", "MRP": "1299", "Selling_Price": 1169, "Cost_Price": 590, "Status": "Active"}, {"Product_ID": "PRD0042", "SKU": "SKU00042", "Brand_Name": "Kay Beauty", "Category_Name": "Makeup", "Subcategory_Name": "Foundation", "Product_Name": "Kay Beauty Hydrating Foundation", "Variant": "130N Light Beige", "MRP": "1299", "Selling_Price": 1169, "Cost_Price": 590, "Status": "Active"}, {"Product_ID": "PRD0043", "SKU": "SKU00043", "Brand_Name": "Kay Beauty", "Category_Name": "Makeup", "Subcategory_Name": "Concealer", "Product_Name": "Kay Beauty HD Liquid Concealer", "Variant": "Light", "MRP": "799", "Selling_Price": 719, "Cost_Price": 365, "Status": "Active"}, {"Product_ID": "PRD0044", "SKU": "SKU00044", "Brand_Name": "Kay Beauty", "Category_Name": "Makeup", "Subcategory_Name": "Lipstick", "Product_Name": "Kay Beauty Matteinee Lip Crayon", "Variant": "Dialogue", "MRP": "899", "Selling_Price": 809, "Cost_Price": 410, "Status": "Active"}, {"Product_ID": "PRD0045", "SKU": "SKU00045", "Brand_Name": "Kay Beauty", "Category_Name": "Makeup", "Subcategory_Name": "Lipstick", "Product_Name": "Kay Beauty Matteinee Lip Crayon", "Variant": "Encore", "MRP": "899", "Selling_Price": 809, "Cost_Price": 410, "Status": "Active"}, {"Product_ID": "PRD0046", "SKU": "SKU00046", "Brand_Name": "Kay Beauty", "Category_Name": "Makeup", "Subcategory_Name": "Mascara", "Product_Name": "Kay Beauty Lash Maximizer Mascara", "Variant": "Intense Black", "MRP": "999", "Selling_Price": 899, "Cost_Price": 455, "Status": "Active"}, {"Product_ID": "PRD0047", "SKU": "SKU00047", "Brand_Name": "Kay Beauty", "Category_Name": "Makeup", "Subcategory_Name": "Eyeliner", "Product_Name": "Kay Beauty Quick Dry Liquid Eyeliner", "Variant": "Black", "MRP": "699", "Selling_Price": 629, "Cost_Price": 320, "Status": "Active"}, {"Product_ID": "PRD0048", "SKU": "SKU00048", "Brand_Name": "Kay Beauty", "Category_Name": "Makeup", "Subcategory_Name": "Kajal", "Product_Name": "Kay Beauty Kohlstar Kajal", "Variant": "Midnight Black", "MRP": "499", "Selling_Price": 449, "Cost_Price": 225, "Status": "Active"}, {"Product_ID": "PRD0049", "SKU": "SKU00049", "Brand_Name": "Kay Beauty", "Category_Name": "Makeup", "Subcategory_Name": "Blush", "Product_Name": "Kay Beauty Creme Blush", "Variant": "Soft Nude", "MRP": "799", "Selling_Price": 719, "Cost_Price": 365, "Status": "Active"}, {"Product_ID": "PRD0050", "SKU": "SKU00050", "Brand_Name": "Kay Beauty", "Category_Name": "Makeup", "Subcategory_Name": "Highlighter", "Product_Name": "Kay Beauty Illuminating Highlighter", "Variant": "Champagne", "MRP": "899", "Selling_Price": 809, "Cost_Price": 410, "Status": "Active"}, {"Product_ID": "PRD0051", "SKU": "SKU00051", "Brand_Name": "Kay Beauty", "Category_Name": "Makeup", "Subcategory_Name": "Primer", "Product_Name": "Kay Beauty Hydrating Primer", "Variant": "Hydrating", "MRP": "899", "Selling_Price": 809, "Cost_Price": 410, "Status": "Active"}, {"Product_ID": "PRD0052", "SKU": "SKU00052", "Brand_Name": "Kay Beauty", "Category_Name": "Makeup", "Subcategory_Name": "Compact", "Product_Name": "Kay Beauty Matte Compact Powder", "Variant": "120Y Light", "MRP": "799", "Selling_Price": 719, "Cost_Price": 365, "Status": "Active"}, {"Product_ID": "PRD0053", "SKU": "SKU00053", "Brand_Name": "Kay Beauty", "Category_Name": "Makeup", "Subcategory_Name": "Foundation", "Product_Name": "Kay Beauty Hydrating Foundation", "Variant": "140W Warm Beige", "MRP": "1299", "Selling_Price": 1169, "Cost_Price": 590, "Status": "Active"}, {"Product_ID": "PRD0054", "SKU": "SKU00054", "Brand_Name": "Kay Beauty", "Category_Name": "Makeup", "Subcategory_Name": "Concealer", "Product_Name": "Kay Beauty HD Liquid Concealer", "Variant": "Medium", "MRP": "799", "Selling_Price": 719, "Cost_Price": 365, "Status": "Active"}, {"Product_ID": "PRD0055", "SKU": "SKU00055", "Brand_Name": "Kay Beauty", "Category_Name": "Makeup", "Subcategory_Name": "Lipstick", "Product_Name": "Kay Beauty Matte Drama Long Stay Lipstick", "Variant": "Panache", "MRP": "999", "Selling_Price": 899, "Cost_Price": 455, "Status": "Active"}, {"Product_ID": "PRD0056", "SKU": "SKU00056", "Brand_Name": "Kay Beauty", "Category_Name": "Makeup", "Subcategory_Name": "Lipstick", "Product_Name": "Kay Beauty Matte Drama Long Stay Lipstick", "Variant": "Confident", "MRP": "999", "Selling_Price": 899, "Cost_Price": 455, "Status": "Active"}, {"Product_ID": "PRD0057", "SKU": "SKU00057", "Brand_Name": "Kay Beauty", "Category_Name": "Makeup", "Subcategory_Name": "Blush", "Product_Name": "Kay Beauty Creme Blush", "Variant": "Peachy", "MRP": "799", "Selling_Price": 719, "Cost_Price": 365, "Status": "Active"}, {"Product_ID": "PRD0058", "SKU": "SKU00058", "Brand_Name": "Kay Beauty", "Category_Name": "Makeup", "Subcategory_Name": "Highlighter", "Product_Name": "Kay Beauty Illuminating Highlighter", "Variant": "Rose Gold", "MRP": "899", "Selling_Price": 809, "Cost_Price": 410, "Status": "Active"}, {"Product_ID": "PRD0059", "SKU": "SKU00059", "Brand_Name": "Kay Beauty", "Category_Name": "Makeup", "Subcategory_Name": "Eyeliner", "Product_Name": "Kay Beauty Ink Artist Gel Kajal", "Variant": "Brown", "MRP": "599", "Selling_Price": 539, "Cost_Price": 275, "Status": "Active"}, {"Product_ID": "PRD0060", "SKU": "SKU00060", "Brand_Name": "Kay Beauty", "Category_Name": "Makeup", "Subcategory_Name": "Mascara", "Product_Name": "Kay Beauty Volume & Length Mascara", "Variant": "Black", "MRP": "999", "Selling_Price": 899, "Cost_Price": 455, "Status": "Active"}];
+    const customerData = [{"Customer_ID": "CUST000001", "First_Name": "Dayita", "Last_Name": "Bakshi", "Gender": "Female", "Email": "yash32@example.net", "Geo_ID": "GEO001", "Registration_Date": "2024-12-31", "Acquisition_Source": "Nykaa App", "Preferred_Channel": "Mobile App", "Status": "Active"}, {"Customer_ID": "CUST000002", "First_Name": "Ira", "Last_Name": "Saini", "Gender": "Female", "Email": "saumyamall@example.org", "Geo_ID": "GEO007", "Registration_Date": "2024-01-11", "Acquisition_Source": "Google Ads", "Preferred_Channel": "Mobile App", "Status": "Active"}, {"Customer_ID": "CUST000003", "First_Name": "Orinder", "Last_Name": "Lalla", "Gender": "Male", "Email": "sharafjeet@example.com", "Geo_ID": "GEO007", "Registration_Date": "2026-07-14", "Acquisition_Source": "Instagram", "Preferred_Channel": "Mobile App", "Status": "Active"}, {"Customer_ID": "CUST000004", "First_Name": "Kamala", "Last_Name": "Chaudhuri", "Gender": "Female", "Email": "dmall@example.net", "Geo_ID": "GEO006", "Registration_Date": "2023-03-31", "Acquisition_Source": "Google Ads", "Preferred_Channel": "Mobile App", "Status": "Active"}, {"Customer_ID": "CUST000005", "First_Name": "Ranveer", "Last_Name": "Madan", "Gender": "Male", "Email": "ektabhalla@example.org", "Geo_ID": "GEO009", "Registration_Date": "2026-02-17", "Acquisition_Source": "Google Ads", "Preferred_Channel": "Retail Store", "Status": "Active"}, {"Customer_ID": "CUST000006", "First_Name": "Veer", "Last_Name": "Dhar", "Gender": "Male", "Email": "liam38@example.net", "Geo_ID": "GEO010", "Registration_Date": "2025-08-13", "Acquisition_Source": "Google Ads", "Preferred_Channel": "Mobile App", "Status": "Active"}, {"Customer_ID": "CUST000007", "First_Name": "Christopher", "Last_Name": "Dua", "Gender": "Male", "Email": "pahalbhatt@example.com", "Geo_ID": "GEO007", "Registration_Date": "2023-01-14", "Acquisition_Source": "Instagram", "Preferred_Channel": "Mobile App", "Status": "Active"}, {"Customer_ID": "CUST000008", "First_Name": "Urishilla", "Last_Name": "Dugar", "Gender": "Female", "Email": "uaggarwal@example.net", "Geo_ID": "GEO011", "Registration_Date": "2025-08-23", "Acquisition_Source": "Nykaa App", "Preferred_Channel": "Mobile App", "Status": "Active"}, {"Customer_ID": "CUST000009", "First_Name": "Aadi", "Last_Name": "Naik", "Gender": "Male", "Email": "hbahl@example.com", "Geo_ID": "GEO011", "Registration_Date": "2023-02-08", "Acquisition_Source": "Nykaa App", "Preferred_Channel": "Mobile App", "Status": "Active"}, {"Customer_ID": "CUST000010", "First_Name": "Vyanjana", "Last_Name": "Gandhi", "Gender": "Female", "Email": "pallavi38@example.net", "Geo_ID": "GEO005", "Registration_Date": "2022-11-06", "Acquisition_Source": "Google Ads", "Preferred_Channel": "Website", "Status": "Active"}, {"Customer_ID": "CUST000011", "First_Name": "Advaith", "Last_Name": "Karpe", "Gender": "Male", "Email": "abhimanyubobal@example.net", "Geo_ID": "GEO008", "Registration_Date": "2023-06-13", "Acquisition_Source": "Google Ads", "Preferred_Channel": "Mobile App", "Status": "Active"}, {"Customer_ID": "CUST000012", "First_Name": "Ekaja", "Last_Name": "Solanki", "Gender": "Female", "Email": "urvashiray@example.org", "Geo_ID": "GEO003", "Registration_Date": "2025-07-03", "Acquisition_Source": "Organic Search", "Preferred_Channel": "Mobile App", "Status": "Active"}, {"Customer_ID": "CUST000013", "First_Name": "Darika", "Last_Name": "Kothari", "Gender": "Female", "Email": "ranveeryadav@example.com", "Geo_ID": "GEO010", "Registration_Date": "2025-03-14", "Acquisition_Source": "Google Ads", "Preferred_Channel": "Mobile App", "Status": "Active"}, {"Customer_ID": "CUST000014", "First_Name": "Advika", "Last_Name": "Chander", "Gender": "Female", "Email": "ojasray@example.com", "Geo_ID": "GEO012", "Registration_Date": "2024-04-14", "Acquisition_Source": "Google Ads", "Preferred_Channel": "Website", "Status": "Active"}, {"Customer_ID": "CUST000015", "First_Name": "Widisha", "Last_Name": "Dubey", "Gender": "Female", "Email": "chamankalla@example.org", "Geo_ID": "GEO012", "Registration_Date": "2022-10-27", "Acquisition_Source": "YouTube", "Preferred_Channel": "Mobile App", "Status": "Active"}, {"Customer_ID": "CUST000016", "First_Name": "Yashoda", "Last_Name": "Buch", "Gender": "Female", "Email": "ekapadbir@example.net", "Geo_ID": "GEO010", "Registration_Date": "2025-03-22", "Acquisition_Source": "Google Ads", "Preferred_Channel": "Mobile App", "Status": "Active"}, {"Customer_ID": "CUST000017", "First_Name": "Yutika", "Last_Name": "Mutti", "Gender": "Female", "Email": "samarth53@example.com", "Geo_ID": "GEO006", "Registration_Date": "2022-11-20", "Acquisition_Source": "YouTube", "Preferred_Channel": "Website", "Status": "Active"}, {"Customer_ID": "CUST000018", "First_Name": "Hredhaan", "Last_Name": "Toor", "Gender": "Male", "Email": "kevin51@example.org", "Geo_ID": "GEO002", "Registration_Date": "2026-04-27", "Acquisition_Source": "Nykaa App", "Preferred_Channel": "Website", "Status": "Inactive"}, {"Customer_ID": "CUST000019", "First_Name": "Damini", "Last_Name": "Desai", "Gender": "Female", "Email": "jack18@example.org", "Geo_ID": "GEO009", "Registration_Date": "2022-12-17", "Acquisition_Source": "YouTube", "Preferred_Channel": "Mobile App", "Status": "Active"}, {"Customer_ID": "CUST000020", "First_Name": "Udyati", "Last_Name": "Malhotra", "Gender": "Female", "Email": "aggarwalgauri@example.org", "Geo_ID": "GEO006", "Registration_Date": "2024-10-10", "Acquisition_Source": "Organic Search", "Preferred_Channel": "Mobile App", "Status": "Active"}, {"Customer_ID": "CUST000021", "First_Name": "Reva", "Last_Name": "Divan", "Gender": "Female", "Email": "cdatta@example.com", "Geo_ID": "GEO004", "Registration_Date": "2026-04-18", "Acquisition_Source": "Referral", "Preferred_Channel": "Mobile App", "Status": "Active"}, {"Customer_ID": "CUST000022", "First_Name": "Kashish", "Last_Name": "Gaba", "Gender": "Female", "Email": "nitarabakshi@example.org", "Geo_ID": "GEO009", "Registration_Date": "2023-05-23", "Acquisition_Source": "Instagram", "Preferred_Channel": "Mobile App", "Status": "Active"}, {"Customer_ID": "CUST000023", "First_Name": "Veda", "Last_Name": "Palla", "Gender": "Female", "Email": "vedant30@example.net", "Geo_ID": "GEO004", "Registration_Date": "2026-05-08", "Acquisition_Source": "Meta Ads", "Preferred_Channel": "Website", "Status": "Active"}, {"Customer_ID": "CUST000024", "First_Name": "Devika", "Last_Name": "Lal", "Gender": "Female", "Email": "alkabarad@example.org", "Geo_ID": "GEO008", "Registration_Date": "2023-08-12", "Acquisition_Source": "YouTube", "Preferred_Channel": "Mobile App", "Status": "Active"}, {"Customer_ID": "CUST000025", "First_Name": "Tejas", "Last_Name": "Agarwal", "Gender": "Male", "Email": "janujasankar@example.org", "Geo_ID": "GEO004", "Registration_Date": "2025-05-19", "Acquisition_Source": "Google Ads", "Preferred_Channel": "Mobile App", "Status": "Active"}, {"Customer_ID": "CUST000026", "First_Name": "Devansh", "Last_Name": "Handa", "Gender": "Male", "Email": "rraghavan@example.net", "Geo_ID": "GEO002", "Registration_Date": "2025-09-25", "Acquisition_Source": "Organic Search", "Preferred_Channel": "Website", "Status": "Active"}, {"Customer_ID": "CUST000027", "First_Name": "Oeshi", "Last_Name": "Shroff", "Gender": "Female", "Email": "rsathe@example.org", "Geo_ID": "GEO002", "Registration_Date": "2023-06-29", "Acquisition_Source": "Email Campaign", "Preferred_Channel": "Website", "Status": "Active"}, {"Customer_ID": "CUST000028", "First_Name": "Ira", "Last_Name": "Din", "Gender": "Female", "Email": "batrayash@example.com", "Geo_ID": "GEO001", "Registration_Date": "2025-03-20", "Acquisition_Source": "Google Ads", "Preferred_Channel": "Mobile App", "Status": "Active"}, {"Customer_ID": "CUST000029", "First_Name": "Aahana", "Last_Name": "Chhabra", "Gender": "Female", "Email": "lkanda@example.net", "Geo_ID": "GEO012", "Registration_Date": "2024-12-21", "Acquisition_Source": "Email Campaign", "Preferred_Channel": "Retail Store", "Status": "Active"}, {"Customer_ID": "CUST000030", "First_Name": "Vaishnavi", "Last_Name": "Thaman", "Gender": "Female", "Email": "ksehgal@example.net", "Geo_ID": "GEO012", "Registration_Date": "2025-06-12", "Acquisition_Source": "Referral", "Preferred_Channel": "Website", "Status": "Active"}, {"Customer_ID": "CUST000031", "First_Name": "Jacob", "Last_Name": "Magar", "Gender": "Male", "Email": "ekaja81@example.org", "Geo_ID": "GEO003", "Registration_Date": "2024-04-03", "Acquisition_Source": "Google Ads", "Preferred_Channel": "Mobile App", "Status": "Active"}, {"Customer_ID": "CUST000032", "First_Name": "Ishanvi", "Last_Name": "Salvi", "Gender": "Female", "Email": "wbahri@example.net", "Geo_ID": "GEO002", "Registration_Date": "2024-07-18", "Acquisition_Source": "Email Campaign", "Preferred_Channel": "Mobile App", "Status": "Active"}, {"Customer_ID": "CUST000033", "First_Name": "Madhavi", "Last_Name": "Sarin", "Gender": "Female", "Email": "ybalakrishnan@example.com", "Geo_ID": "GEO005", "Registration_Date": "2025-03-30", "Acquisition_Source": "Instagram", "Preferred_Channel": "Website", "Status": "Active"}, {"Customer_ID": "CUST000034", "First_Name": "Chakrika", "Last_Name": "Sangha", "Gender": "Female", "Email": "triyagopal@example.org", "Geo_ID": "GEO006", "Registration_Date": "2025-12-06", "Acquisition_Source": "Email Campaign", "Preferred_Channel": "Retail Store", "Status": "Active"}, {"Customer_ID": "CUST000035", "First_Name": "Vrinda", "Last_Name": "Bahl", "Gender": "Female", "Email": "pallaudarsh@example.net", "Geo_ID": "GEO009", "Registration_Date": "2025-04-09", "Acquisition_Source": "Instagram", "Preferred_Channel": "Mobile App", "Status": "Active"}, {"Customer_ID": "CUST000036", "First_Name": "Janani", "Last_Name": "Shroff", "Gender": "Female", "Email": "jyoti29@example.net", "Geo_ID": "GEO009", "Registration_Date": "2026-05-11", "Acquisition_Source": "Nykaa App", "Preferred_Channel": "Mobile App", "Status": "Active"}, {"Customer_ID": "CUST000037", "First_Name": "Hardik", "Last_Name": "Borra", "Gender": "Male", "Email": "harshmitra@example.net", "Geo_ID": "GEO005", "Registration_Date": "2022-08-23", "Acquisition_Source": "Google Ads", "Preferred_Channel": "Mobile App", "Status": "Active"}, {"Customer_ID": "CUST000038", "First_Name": "Ucchal", "Last_Name": "Suri", "Gender": "Female", "Email": "santjanaki@example.net", "Geo_ID": "GEO011", "Registration_Date": "2025-11-23", "Acquisition_Source": "Nykaa App", "Preferred_Channel": "Mobile App", "Status": "Active"}, {"Customer_ID": "CUST000039", "First_Name": "Lipika", "Last_Name": "Naidu", "Gender": "Female", "Email": "gabrielmallick@example.com", "Geo_ID": "GEO007", "Registration_Date": "2023-06-10", "Acquisition_Source": "Meta Ads", "Preferred_Channel": "Mobile App", "Status": "Active"}, {"Customer_ID": "CUST000040", "First_Name": "Kai", "Last_Name": "Oak", "Gender": "Male", "Email": "anya80@example.net", "Geo_ID": "GEO009", "Registration_Date": "2022-12-18", "Acquisition_Source": "Nykaa App", "Preferred_Channel": "Mobile App", "Status": "Active"}, {"Customer_ID": "CUST000041", "First_Name": "Janya", "Last_Name": "Ravel", "Gender": "Female", "Email": "daminipillay@example.com", "Geo_ID": "GEO001", "Registration_Date": "2023-07-07", "Acquisition_Source": "Meta Ads", "Preferred_Channel": "Mobile App", "Status": "Active"}, {"Customer_ID": "CUST000042", "First_Name": "Gopal", "Last_Name": "Mutti", "Gender": "Male", "Email": "wasonqasim@example.org", "Geo_ID": "GEO001", "Registration_Date": "2024-01-14", "Acquisition_Source": "Retail Store", "Preferred_Channel": "Mobile App", "Status": "Active"}, {"Customer_ID": "CUST000043", "First_Name": "Matthew", "Last_Name": "Atwal", "Gender": "Male", "Email": "anushabath@example.org", "Geo_ID": "GEO010", "Registration_Date": "2023-12-15", "Acquisition_Source": "Nykaa App", "Preferred_Channel": "Retail Store", "Status": "Active"}, {"Customer_ID": "CUST000044", "First_Name": "Atharv", "Last_Name": "Krishnan", "Gender": "Male", "Email": "ecomar@example.com", "Geo_ID": "GEO001", "Registration_Date": "2024-10-28", "Acquisition_Source": "Google Ads", "Preferred_Channel": "Retail Store", "Status": "Active"}, {"Customer_ID": "CUST000045", "First_Name": "Turvi", "Last_Name": "Kara", "Gender": "Female", "Email": "cseshadri@example.com", "Geo_ID": "GEO001", "Registration_Date": "2025-03-26", "Acquisition_Source": "YouTube", "Preferred_Channel": "Mobile App", "Status": "Active"}, {"Customer_ID": "CUST000046", "First_Name": "Gaurangi", "Last_Name": "Khatri", "Gender": "Female", "Email": "falandugar@example.org", "Geo_ID": "GEO001", "Registration_Date": "2025-05-05", "Acquisition_Source": "Nykaa App", "Preferred_Channel": "Mobile App", "Status": "Active"}, {"Customer_ID": "CUST000047", "First_Name": "Libni", "Last_Name": "Hora", "Gender": "Female", "Email": "icontractor@example.org", "Geo_ID": "GEO007", "Registration_Date": "2024-05-07", "Acquisition_Source": "Nykaa App", "Preferred_Channel": "Website", "Status": "Inactive"}, {"Customer_ID": "CUST000048", "First_Name": "Vinaya", "Last_Name": "Modi", "Gender": "Female", "Email": "gmagar@example.net", "Geo_ID": "GEO005", "Registration_Date": "2023-07-05", "Acquisition_Source": "Google Ads", "Preferred_Channel": "Mobile App", "Status": "Inactive"}, {"Customer_ID": "CUST000049", "First_Name": "Aishani", "Last_Name": "Luthra", "Gender": "Female", "Email": "gillupma@example.net", "Geo_ID": "GEO010", "Registration_Date": "2023-12-04", "Acquisition_Source": "Google Ads", "Preferred_Channel": "Mobile App", "Status": "Active"}, {"Customer_ID": "CUST000050", "First_Name": "Damini", "Last_Name": "Dyal", "Gender": "Female", "Email": "nisha74@example.net", "Geo_ID": "GEO012", "Registration_Date": "2025-11-22", "Acquisition_Source": "Nykaa App", "Preferred_Channel": "Mobile App", "Status": "Inactive"}, {"Customer_ID": "CUST000051", "First_Name": "Aachal", "Last_Name": "Shere", "Gender": "Female", "Email": "mbhagat@example.net", "Geo_ID": "GEO011", "Registration_Date": "2026-02-11", "Acquisition_Source": "YouTube", "Preferred_Channel": "Website", "Status": "Active"}, {"Customer_ID": "CUST000052", "First_Name": "Watika", "Last_Name": "Dara", "Gender": "Female", "Email": "khatrinathan@example.com", "Geo_ID": "GEO009", "Registration_Date": "2026-04-28", "Acquisition_Source": "Google Ads", "Preferred_Channel": "Mobile App", "Status": "Active"}, {"Customer_ID": "CUST000053", "First_Name": "Mugdha", "Last_Name": "Upadhyay", "Gender": "Female", "Email": "ojasvi77@example.org", "Geo_ID": "GEO001", "Registration_Date": "2023-12-14", "Acquisition_Source": "Instagram", "Preferred_Channel": "Mobile App", "Status": "Active"}, {"Customer_ID": "CUST000054", "First_Name": "Yashica", "Last_Name": "Loke", "Gender": "Female", "Email": "mandalchanchal@example.net", "Geo_ID": "GEO012", "Registration_Date": "2024-05-31", "Acquisition_Source": "Google Ads", "Preferred_Channel": "Mobile App", "Status": "Active"}, {"Customer_ID": "CUST000055", "First_Name": "Oeshi", "Last_Name": "Gulati", "Gender": "Female", "Email": "leelakaur@example.com", "Geo_ID": "GEO004", "Registration_Date": "2023-12-03", "Acquisition_Source": "Meta Ads", "Preferred_Channel": "Mobile App", "Status": "Active"}, {"Customer_ID": "CUST000056", "First_Name": "Chandresh", "Last_Name": "Sarraf", "Gender": "Male", "Email": "voratanmayi@example.org", "Geo_ID": "GEO008", "Registration_Date": "2025-12-31", "Acquisition_Source": "Organic Search", "Preferred_Channel": "Mobile App", "Status": "Active"}, {"Customer_ID": "CUST000057", "First_Name": "Sachi", "Last_Name": "Nadig", "Gender": "Female", "Email": "nbanik@example.org", "Geo_ID": "GEO001", "Registration_Date": "2022-10-11", "Acquisition_Source": "Retail Store", "Preferred_Channel": "Website", "Status": "Active"}, {"Customer_ID": "CUST000058", "First_Name": "Baghyawati", "Last_Name": "Memon", "Gender": "Female", "Email": "kavya62@example.org", "Geo_ID": "GEO008", "Registration_Date": "2024-08-01", "Acquisition_Source": "Google Ads", "Preferred_Channel": "Mobile App", "Status": "Active"}, {"Customer_ID": "CUST000059", "First_Name": "Eshana", "Last_Name": "Kata", "Gender": "Female", "Email": "dkumar@example.com", "Geo_ID": "GEO009", "Registration_Date": "2025-02-23", "Acquisition_Source": "Referral", "Preferred_Channel": "Retail Store", "Status": "Active"}, {"Customer_ID": "CUST000060", "First_Name": "Simon", "Last_Name": "Krishna", "Gender": "Male", "Email": "mmittal@example.com", "Geo_ID": "GEO012", "Registration_Date": "2023-09-10", "Acquisition_Source": "YouTube", "Preferred_Channel": "Mobile App", "Status": "Active"}];
+    const storesData = [{"Store_ID": "STR001", "Store_Name": "Nykaa Luxe", "Format": "Phoenix Palladium", "Mall/Location": "Mumbai", "City": "Maharashtra", "State": "West", "Region": "GEO003", "Store_Size_sqft": 2021, "Opening_Year": "EMP001", "Status": ""}, {"Store_ID": "STR002", "Store_Name": "Nykaa On Trend", "Format": "Phoenix Marketcity", "Mall/Location": "Pune", "City": "Maharashtra", "State": "West", "Region": "GEO004", "Store_Size_sqft": 2022, "Opening_Year": "EMP002", "Status": ""}, {"Store_ID": "STR003", "Store_Name": "Nykaa Luxe", "Format": "Select Citywalk", "Mall/Location": "New Delhi", "City": "Delhi", "State": "North", "Region": "GEO001", "Store_Size_sqft": 2020, "Opening_Year": "EMP003", "Status": ""}, {"Store_ID": "STR004", "Store_Name": "Nykaa Luxe", "Format": "UB City", "Mall/Location": "Bengaluru", "City": "Karnataka", "State": "South", "Region": "GEO006", "Store_Size_sqft": 2021, "Opening_Year": "EMP004", "Status": ""}, {"Store_ID": "STR005", "Store_Name": "Nykaa Luxe", "Format": "Quest Mall", "Mall/Location": "Kolkata", "City": "West Bengal", "State": "East", "Region": "GEO010", "Store_Size_sqft": 2022, "Opening_Year": "EMP005", "Status": ""}, {"Store_ID": "STR006", "Store_Name": "Nykaa On Trend", "Format": "Inorbit Mall", "Mall/Location": "Hyderabad", "City": "Telangana", "State": "South", "Region": "GEO008", "Store_Size_sqft": 2023, "Opening_Year": "EMP006", "Status": ""}, {"Store_ID": "STR007", "Store_Name": "Nykaa On Trend", "Format": "Express Avenue", "Mall/Location": "Chennai", "City": "Tamil Nadu", "State": "South", "Region": "GEO007", "Store_Size_sqft": 2022, "Opening_Year": "EMP007", "Status": ""}, {"Store_ID": "STR008", "Store_Name": "Nykaa On Trend", "Format": "Lulu Mall", "Mall/Location": "Kochi", "City": "Kerala", "State": "South", "Region": "GEO009", "Store_Size_sqft": 2023, "Opening_Year": "EMP008", "Status": ""}, {"Store_ID": "STR009", "Store_Name": "Nykaa Luxe", "Format": "Ahmedabad One", "Mall/Location": "Ahmedabad", "City": "Gujarat", "State": "West", "Region": "GEO005", "Store_Size_sqft": 2021, "Opening_Year": "EMP009", "Status": ""}, {"Store_ID": "STR010", "Store_Name": "Nykaa On Trend", "Format": "Lulu Mall", "Mall/Location": "Lucknow", "City": "Uttar Pradesh", "State": "North", "Region": "GEO002", "Store_Size_sqft": 2024, "Opening_Year": "EMP010", "Status": ""}, {"Store_ID": "STR011", "Store_Name": "Nykaa Luxe", "Format": "DLF Promenade", "Mall/Location": "New Delhi", "City": "Delhi", "State": "North", "Region": "GEO001", "Store_Size_sqft": 2023, "Opening_Year": "EMP011", "Status": ""}, {"Store_ID": "STR012", "Store_Name": "Nykaa On Trend", "Format": "Elante Mall", "Mall/Location": "Chandigarh", "City": "Punjab", "State": "North", "Region": "GEO012", "Store_Size_sqft": 2022, "Opening_Year": "EMP012", "Status": ""}, {"Store_ID": "STR013", "Store_Name": "Nykaa Luxe", "Format": "High Street Phoenix", "Mall/Location": "Mumbai", "City": "Maharashtra", "State": "West", "Region": "GEO003", "Store_Size_sqft": 2020, "Opening_Year": "EMP013", "Status": ""}, {"Store_ID": "STR014", "Store_Name": "Nykaa On Trend", "Format": "Forum Mall", "Mall/Location": "Bengaluru", "City": "Karnataka", "State": "South", "Region": "GEO006", "Store_Size_sqft": 2024, "Opening_Year": "EMP014", "Status": ""}, {"Store_ID": "STR015", "Store_Name": "Nykaa On Trend", "Format": "Forum Sujana", "Mall/Location": "Hyderabad", "City": "Telangana", "State": "South", "Region": "GEO008", "Store_Size_sqft": 2024, "Opening_Year": "EMP015", "Status": ""}, {"Store_ID": "STR016", "Store_Name": "Nykaa Luxe", "Format": "South City Mall", "Mall/Location": "Kolkata", "City": "West Bengal", "State": "East", "Region": "GEO010", "Store_Size_sqft": 2021, "Opening_Year": "EMP016", "Status": ""}, {"Store_ID": "STR017", "Store_Name": "Nykaa On Trend", "Format": "Seawoods Grand Central", "Mall/Location": "Mumbai", "City": "Maharashtra", "State": "West", "Region": "GEO003", "Store_Size_sqft": 2024, "Opening_Year": "EMP017", "Status": ""}, {"Store_ID": "STR018", "Store_Name": "Nykaa On Trend", "Format": "VR Chennai", "Mall/Location": "Chennai", "City": "Tamil Nadu", "State": "South", "Region": "GEO007", "Store_Size_sqft": 2023, "Opening_Year": "EMP018", "Status": ""}, {"Store_ID": "STR019", "Store_Name": "Nykaa Luxe", "Format": "Phoenix Marketcity", "Mall/Location": "Pune", "City": "Maharashtra", "State": "West", "Region": "GEO004", "Store_Size_sqft": 2022, "Opening_Year": "EMP019", "Status": ""}, {"Store_ID": "STR020", "Store_Name": "Nykaa On Trend", "Format": "Nexus Ahmedabad", "Mall/Location": "Ahmedabad", "City": "Gujarat", "State": "West", "Region": "GEO005", "Store_Size_sqft": 2024, "Opening_Year": "EMP020", "Status": ""}, {"Store_ID": "STR021", "Store_Name": "Nykaa Luxe", "Format": "Lulu Mall", "Mall/Location": "Lucknow", "City": "Uttar Pradesh", "State": "North", "Region": "GEO002", "Store_Size_sqft": 2023, "Opening_Year": "EMP021", "Status": ""}, {"Store_ID": "STR022", "Store_Name": "Nykaa On Trend", "Format": "Forum Kochi", "Mall/Location": "Kochi", "City": "Kerala", "State": "South", "Region": "GEO009", "Store_Size_sqft": 2024, "Opening_Year": "EMP022", "Status": ""}, {"Store_ID": "STR023", "Store_Name": "Nykaa Luxe", "Format": "Esplanade Mall", "Mall/Location": "Bhubaneswar", "City": "Odisha", "State": "East", "Region": "GEO011", "Store_Size_sqft": 2023, "Opening_Year": "EMP023", "Status": ""}, {"Store_ID": "STR024", "Store_Name": "Nykaa On Trend", "Format": "DB City Mall", "Mall/Location": "Bhopal", "City": "Madhya Pradesh", "State": "Central", "Region": "GEO005", "Store_Size_sqft": 2024, "Opening_Year": "EMP024", "Status": ""}, {"Store_ID": "STR025", "Store_Name": "Nykaa Luxe", "Format": "Pacific Mall", "Mall/Location": "New Delhi", "City": "Delhi", "State": "North", "Region": "GEO001", "Store_Size_sqft": 2025, "Opening_Year": "EMP025", "Status": ""}];
+    const mktgData = [{"Marketing_ID": "MKT001", "Campaign_Name": "Campaign 1", "Campaign_Type": "Brand Promotion", "Discount_Type": "Percentage", "Discount_Value": "10", "Start_Date": "2022-01-20", "End_Date": "2022-02-15", "Channel": "App", "Objective": "Customer Acquisition", "Status": "Completed"}, {"Marketing_ID": "MKT002", "Campaign_Name": "Campaign 2", "Campaign_Type": "Brand Promotion", "Discount_Type": "BOGO", "Discount_Value": "1+1", "Start_Date": "2024-08-25", "End_Date": "2024-08-30", "Channel": "Omnichannel", "Objective": "Customer Acquisition", "Status": "Completed"}, {"Marketing_ID": "MKT003", "Campaign_Name": "Campaign 3", "Campaign_Type": "Flash Sale", "Discount_Type": "Flat", "Discount_Value": "847", "Start_Date": "2022-04-13", "End_Date": "2022-04-29", "Channel": "Retail", "Objective": "Awareness", "Status": "Completed"}, {"Marketing_ID": "MKT004", "Campaign_Name": "Campaign 4", "Campaign_Type": "Festive Sale", "Discount_Type": "BOGO", "Discount_Value": "1+1", "Start_Date": "2024-08-01", "End_Date": "2024-08-27", "Channel": "App", "Objective": "Sales", "Status": "Completed"}, {"Marketing_ID": "MKT005", "Campaign_Name": "Campaign 5", "Campaign_Type": "Category Promotion", "Discount_Type": "Percentage", "Discount_Value": "29", "Start_Date": "2022-05-05", "End_Date": "2022-05-10", "Channel": "Retail", "Objective": "Customer Acquisition", "Status": "Completed"}, {"Marketing_ID": "MKT006", "Campaign_Name": "Campaign 6", "Campaign_Type": "Loyalty Offer", "Discount_Type": "Percentage", "Discount_Value": "25", "Start_Date": "2024-09-23", "End_Date": "2024-10-17", "Channel": "Omnichannel", "Objective": "Awareness", "Status": "Completed"}, {"Marketing_ID": "MKT007", "Campaign_Name": "Campaign 7", "Campaign_Type": "New Launch", "Discount_Type": "Percentage", "Discount_Value": "28", "Start_Date": "2022-12-07", "End_Date": "2022-12-16", "Channel": "Omnichannel", "Objective": "Awareness", "Status": "Completed"}, {"Marketing_ID": "MKT008", "Campaign_Name": "Campaign 8", "Campaign_Type": "Category Promotion", "Discount_Type": "", "Discount_Value": "0", "Start_Date": "2024-02-29", "End_Date": "2024-03-29", "Channel": "Retail", "Objective": "Retention", "Status": "Completed"}, {"Marketing_ID": "MKT009", "Campaign_Name": "Campaign 9", "Campaign_Type": "Festive Sale", "Discount_Type": "BOGO", "Discount_Value": "1+1", "Start_Date": "2023-07-28", "End_Date": "2023-08-03", "Channel": "Website", "Objective": "Retention", "Status": "Completed"}, {"Marketing_ID": "MKT010", "Campaign_Name": "Campaign 10", "Campaign_Type": "Bank Offer", "Discount_Type": "Flat", "Discount_Value": "485", "Start_Date": "2025-04-12", "End_Date": "2025-04-30", "Channel": "Omnichannel", "Objective": "Customer Acquisition", "Status": "Active"}, {"Marketing_ID": "MKT011", "Campaign_Name": "Campaign 11", "Campaign_Type": "Category Promotion", "Discount_Type": "Percentage", "Discount_Value": "25", "Start_Date": "2024-07-13", "End_Date": "2024-07-27", "Channel": "Retail", "Objective": "Awareness", "Status": "Completed"}, {"Marketing_ID": "MKT012", "Campaign_Name": "Campaign 12", "Campaign_Type": "New Launch", "Discount_Type": "Percentage", "Discount_Value": "23", "Start_Date": "2022-11-19", "End_Date": "2022-12-12", "Channel": "Website", "Objective": "Retention", "Status": "Completed"}, {"Marketing_ID": "MKT013", "Campaign_Name": "Campaign 13", "Campaign_Type": "Loyalty Offer", "Discount_Type": "", "Discount_Value": "0", "Start_Date": "2025-01-26", "End_Date": "2025-02-21", "Channel": "App", "Objective": "Awareness", "Status": "Active"}, {"Marketing_ID": "MKT014", "Campaign_Name": "Campaign 14", "Campaign_Type": "Festive Sale", "Discount_Type": "Flat", "Discount_Value": "416", "Start_Date": "2024-02-21", "End_Date": "2024-03-03", "Channel": "Omnichannel", "Objective": "Awareness", "Status": "Completed"}, {"Marketing_ID": "MKT015", "Campaign_Name": "Campaign 15", "Campaign_Type": "End of Season Sale", "Discount_Type": "Percentage", "Discount_Value": "29", "Start_Date": "2023-02-28", "End_Date": "2023-03-13", "Channel": "App", "Objective": "Retention", "Status": "Completed"}, {"Marketing_ID": "MKT016", "Campaign_Name": "Campaign 16", "Campaign_Type": "Category Promotion", "Discount_Type": "", "Discount_Value": "0", "Start_Date": "2022-05-09", "End_Date": "2022-05-21", "Channel": "Retail", "Objective": "Awareness", "Status": "Completed"}, {"Marketing_ID": "MKT017", "Campaign_Name": "Campaign 17", "Campaign_Type": "Brand Promotion", "Discount_Type": "Flat", "Discount_Value": "293", "Start_Date": "2024-11-02", "End_Date": "2024-11-25", "Channel": "Website", "Objective": "Sales", "Status": "Completed"}, {"Marketing_ID": "MKT018", "Campaign_Name": "Campaign 18", "Campaign_Type": "Loyalty Offer", "Discount_Type": "BOGO", "Discount_Value": "1+1", "Start_Date": "2023-01-06", "End_Date": "2023-02-05", "Channel": "Retail", "Objective": "Awareness", "Status": "Completed"}, {"Marketing_ID": "MKT019", "Campaign_Name": "Campaign 19", "Campaign_Type": "End of Season Sale", "Discount_Type": "Flat", "Discount_Value": "145", "Start_Date": "2024-11-25", "End_Date": "2024-12-04", "Channel": "Retail", "Objective": "Sales", "Status": "Completed"}, {"Marketing_ID": "MKT020", "Campaign_Name": "Campaign 20", "Campaign_Type": "Flash Sale", "Discount_Type": "", "Discount_Value": "0", "Start_Date": "2024-02-01", "End_Date": "2024-02-26", "Channel": "Website", "Objective": "Retention", "Status": "Completed"}, {"Marketing_ID": "MKT021", "Campaign_Name": "Campaign 21", "Campaign_Type": "Festive Sale", "Discount_Type": "BOGO", "Discount_Value": "1+1", "Start_Date": "2022-03-04", "End_Date": "2022-03-20", "Channel": "App", "Objective": "Sales", "Status": "Completed"}, {"Marketing_ID": "MKT022", "Campaign_Name": "Campaign 22", "Campaign_Type": "Brand Promotion", "Discount_Type": "", "Discount_Value": "0", "Start_Date": "2023-02-24", "End_Date": "2023-03-19", "Channel": "Retail", "Objective": "Retention", "Status": "Completed"}, {"Marketing_ID": "MKT023", "Campaign_Name": "Campaign 23", "Campaign_Type": "New Launch", "Discount_Type": "", "Discount_Value": "0", "Start_Date": "2024-05-22", "End_Date": "2024-05-30", "Channel": "Retail", "Objective": "Sales", "Status": "Completed"}, {"Marketing_ID": "MKT024", "Campaign_Name": "Campaign 24", "Campaign_Type": "Flash Sale", "Discount_Type": "Flat", "Discount_Value": "487", "Start_Date": "2023-11-25", "End_Date": "2023-12-06", "Channel": "App", "Objective": "Sales", "Status": "Completed"}, {"Marketing_ID": "MKT025", "Campaign_Name": "Campaign 25", "Campaign_Type": "End of Season Sale", "Discount_Type": "BOGO", "Discount_Value": "1+1", "Start_Date": "2022-03-13", "End_Date": "2022-04-04", "Channel": "Omnichannel", "Objective": "Sales", "Status": "Completed"}, {"Marketing_ID": "MKT026", "Campaign_Name": "Campaign 26", "Campaign_Type": "Loyalty Offer", "Discount_Type": "Percentage", "Discount_Value": "21", "Start_Date": "2024-03-24", "End_Date": "2024-04-01", "Channel": "Website", "Objective": "Sales", "Status": "Completed"}, {"Marketing_ID": "MKT027", "Campaign_Name": "Campaign 27", "Campaign_Type": "New Launch", "Discount_Type": "Flat", "Discount_Value": "559", "Start_Date": "2024-11-03", "End_Date": "2024-11-20", "Channel": "Retail", "Objective": "Customer Acquisition", "Status": "Completed"}, {"Marketing_ID": "MKT028", "Campaign_Name": "Campaign 28", "Campaign_Type": "Loyalty Offer", "Discount_Type": "Percentage", "Discount_Value": "21", "Start_Date": "2023-03-31", "End_Date": "2023-04-10", "Channel": "App", "Objective": "Sales", "Status": "Completed"}, {"Marketing_ID": "MKT029", "Campaign_Name": "Campaign 29", "Campaign_Type": "Festive Sale", "Discount_Type": "", "Discount_Value": "0", "Start_Date": "2022-04-07", "End_Date": "2022-04-20", "Channel": "App", "Objective": "Customer Acquisition", "Status": "Completed"}, {"Marketing_ID": "MKT030", "Campaign_Name": "Campaign 30", "Campaign_Type": "Category Promotion", "Discount_Type": "Percentage", "Discount_Value": "17", "Start_Date": "2023-10-13", "End_Date": "2023-11-11", "Channel": "Omnichannel", "Objective": "Sales", "Status": "Completed"}];
+    const geoData = [{"Geo_ID": "GEO001", "Region": "North", "State": "Delhi", "City": "New Delhi", "Warehouse": "North Distribution Centre", "Warehouse_Code": "WH-N"}, {"Geo_ID": "GEO002", "Region": "North", "State": "Uttar Pradesh", "City": "Lucknow", "Warehouse": "North Distribution Centre", "Warehouse_Code": "WH-N"}, {"Geo_ID": "GEO003", "Region": "West", "State": "Maharashtra", "City": "Mumbai", "Warehouse": "West Distribution Centre", "Warehouse_Code": "WH-W"}, {"Geo_ID": "GEO004", "Region": "West", "State": "Maharashtra", "City": "Pune", "Warehouse": "West Distribution Centre", "Warehouse_Code": "WH-W"}, {"Geo_ID": "GEO005", "Region": "West", "State": "Gujarat", "City": "Ahmedabad", "Warehouse": "West Distribution Centre", "Warehouse_Code": "WH-W"}, {"Geo_ID": "GEO006", "Region": "South", "State": "Karnataka", "City": "Bengaluru", "Warehouse": "South Distribution Centre", "Warehouse_Code": "WH-S"}, {"Geo_ID": "GEO007", "Region": "South", "State": "Tamil Nadu", "City": "Chennai", "Warehouse": "South Distribution Centre", "Warehouse_Code": "WH-S"}, {"Geo_ID": "GEO008", "Region": "South", "State": "Telangana", "City": "Hyderabad", "Warehouse": "South Distribution Centre", "Warehouse_Code": "WH-S"}, {"Geo_ID": "GEO009", "Region": "South", "State": "Kerala", "City": "Kochi", "Warehouse": "South Distribution Centre", "Warehouse_Code": "WH-S"}, {"Geo_ID": "GEO010", "Region": "East", "State": "West Bengal", "City": "Kolkata", "Warehouse": "East Fulfilment Hub", "Warehouse_Code": "WH-E"}, {"Geo_ID": "GEO011", "Region": "East", "State": "Odisha", "City": "Bhubaneswar", "Warehouse": "East Fulfilment Hub", "Warehouse_Code": "WH-E"}, {"Geo_ID": "GEO012", "Region": "North", "State": "Punjab", "City": "Chandigarh", "Warehouse": "North Distribution Centre", "Warehouse_Code": "WH-N"}];
+
+    const masterKPIs = [{"name": "Total Revenue", "calc": "SUM(Net_Sales)", "source": "Fact_Sales", "dash": "Executive, Sales", "utility": "Measure overall business performance", "visual": "KPI Card", "val": "\u20b9485.6 Cr"}, {"name": "Gross Profit", "calc": "SUM(Gross_Profit)", "source": "Fact_Sales", "dash": "Executive, Sales", "utility": "Evaluate profitability", "visual": "KPI Card", "val": "\u20b9240.8 Cr"}, {"name": "Gross Profit Margin (%)", "calc": "SUM(Gross_Profit)/SUM(Net_Sales)*100", "source": "Fact_Sales", "dash": "Executive", "utility": "Monitor margin efficiency", "visual": "KPI Card", "val": "49.58%"}, {"name": "Total Orders", "calc": "COUNT(DISTINCT Order_ID)", "source": "Fact_Sales", "dash": "Executive, Sales", "utility": "Track order volume", "visual": "KPI Card", "val": "1.42M"}, {"name": "Units Sold", "calc": "SUM(Quantity)", "source": "Fact_Sales", "dash": "Sales", "utility": "Measure product demand", "visual": "KPI Card", "val": "5.41M Units"}, {"name": "Average Order Value", "calc": "SUM(Net_Sales)/COUNT(DISTINCT Order_ID)", "source": "Fact_Sales", "dash": "Sales", "utility": "Increase basket value", "visual": "KPI Card", "val": "\u20b91,845"}, {"name": "Average Selling Price", "calc": "SUM(Net_Sales)/SUM(Quantity)", "source": "Fact_Sales", "dash": "Sales", "utility": "Pricing analysis", "visual": "Card", "val": "\u20b9897.58"}, {"name": "Total Discount", "calc": "SUM(Discount_Amount)", "source": "Fact_Sales", "dash": "Sales", "utility": "Discount effectiveness", "visual": "Card", "val": "\u20b942.3 Cr"}, {"name": "Active Customers", "calc": "COUNT(DISTINCT Customer_ID) from Fact_Sales", "source": "Fact_Sales", "dash": "Executive, Customer", "utility": "Active customer base", "visual": "KPI Card", "val": "4,606"}, {"name": "Registered Customers", "calc": "COUNT(Customer_ID)", "source": "Dim_Customer", "dash": "Customer", "utility": "Customer base size", "visual": "KPI Card", "val": "5,000"}, {"name": "Return Rate (%)", "calc": "COUNT(Return_ID)/COUNT(DISTINCT Order_ID)*100", "source": "Fact_Returns + Fact_Sales", "dash": "Customer", "utility": "Monitor returns", "visual": "Gauge", "val": "2.40%"}, {"name": "Average Rating", "calc": "AVG(Rating)", "source": "Fact_Reviews", "dash": "Customer", "utility": "Customer satisfaction", "visual": "Stars/Card", "val": "4.65 \u2605"}, {"name": "Inventory Health (%)", "calc": "Products above reorder level / Total products *100", "source": "Fact_Inventory", "dash": "Inventory", "utility": "Inventory quality", "visual": "Gauge", "val": "93.8%"}, {"name": "Low Stock Products", "calc": "COUNT(Stock_On_Hand < Reorder_Level)", "source": "Fact_Inventory", "dash": "Inventory", "utility": "Replenishment", "visual": "Alert", "val": "18 SKUs"}, {"name": "Out of Stock Products", "calc": "COUNT(Stock_On_Hand = 0)", "source": "Fact_Inventory", "dash": "Inventory", "utility": "Critical shortages", "visual": "Alert", "val": "4 SKUs"}, {"name": "Revenue by Brand", "calc": "SUM(Net_Sales) by Brand", "source": "Fact_Sales + Dim_Brand", "dash": "Products", "utility": "Brand performance", "visual": "Bar Chart", "val": "Yardley: \u20b973.8Cr, Nykaa: \u20b967.0Cr"}, {"name": "Revenue by Category", "calc": "SUM(Net_Sales) by Category", "source": "Fact_Sales + Dim_Category", "dash": "Products", "utility": "Category planning", "visual": "Treemap / Bar", "val": "Makeup: 33.8%, Skincare: 32.0%"}, {"name": "Revenue by Channel", "calc": "SUM(Net_Sales) by Channel", "source": "Fact_Sales", "dash": "Marketing", "utility": "Channel optimisation", "visual": "Column Chart", "val": "App: 69.2%, Web: 22.3%"}, {"name": "Revenue by Store", "calc": "SUM(Net_Sales) by Store", "source": "Fact_Sales + Dim_Store", "dash": "Sales", "utility": "Store comparison", "visual": "Map/Bar", "val": "25 Retail Outlets"}, {"name": "Revenue Trend", "calc": "SUM(Net_Sales) by Date", "source": "Fact_Sales + Dim_Date", "dash": "Executive, Sales", "utility": "Trend analysis", "visual": "Line Chart", "val": "Monthly FY25-26 Trend"}, {"name": "Campaign Performance", "calc": "SUM(Net_Sales) by Marketing_ID", "source": "Fact_Sales + Dim_Marketing", "dash": "Marketing", "utility": "Campaign comparison", "visual": "Bar Chart", "val": "100 Campaigns Tracked"}, {"name": "Loyalty Enrolment", "calc": "COUNT(Loyalty_Enrollment='Yes')", "source": "Dim_Customer", "dash": "Customer", "utility": "Retention strategy", "visual": "Donut Chart", "val": "2,240 (44.8%)"}, {"name": "Preferred Channel", "calc": "COUNT by Preferred_Channel", "source": "Dim_Customer", "dash": "Customer", "utility": "Channel preference", "visual": "Pie Chart", "val": "App: 3458, Web: 1116"}, {"name": "Acquisition Source", "calc": "COUNT by Acquisition_Source", "source": "Dim_Customer", "dash": "Marketing", "utility": "Marketing effectiveness", "visual": "Donut Chart", "val": "Google Ads: 993, Insta: 875"}];
+
+    // Regional Multipliers & Calculations (Dynamic Filtering Engine)
+    const regionalMetrics = {
+      'All': { rev: 485.6, profit: 240.8, orders: '1.42M', cust: 4606, regCust: 5000, stores: '25 Outlets', health: '96.4', chartMult: 1.0, units: '5.41M', discount: '₹42.3 Cr' },
+      'South': { rev: 155.4, profit: 77.1, orders: '0.45M', cust: 1474, regCust: 1600, stores: '8 Outlets', health: '97.2', chartMult: 0.32, units: '1.73M', discount: '₹13.5 Cr' },
+      'West': { rev: 136.0, profit: 67.4, orders: '0.40M', cust: 1290, regCust: 1400, stores: '7 Outlets', health: '95.8', chartMult: 0.28, units: '1.51M', discount: '₹11.8 Cr' },
+      'North': { rev: 116.5, profit: 57.8, orders: '0.34M', cust: 1105, regCust: 1200, stores: '6 Outlets', health: '94.5', chartMult: 0.24, units: '1.30M', discount: '₹10.1 Cr' },
+      'East': { rev: 77.7, profit: 38.5, orders: '0.23M', cust: 737, regCust: 800, stores: '3 Outlets', health: '93.1', chartMult: 0.16, units: '0.87M', discount: '₹6.8 Cr' }
+    };
+
+    const timeframeMultipliers = {
+      'FY25-26': 1.0,
+      'Q3': 0.345,
+      'MTD': 0.083
+    };
+
+    // Filter Change Event Handler (DYNAMIC REGIONAL & TIMEFRAME UPDATES)
+    function onFilterChange() {
+      const reg = document.getElementById('region-select').value;
+      const time = document.getElementById('timeframe-select').value;
+
+      const regData = regionalMetrics[reg] || regionalMetrics['All'];
+      const timeMult = timeframeMultipliers[time] || 1.0;
+
+      const calcRev = (regData.rev * timeMult).toFixed(1);
+      const calcProfit = (regData.profit * timeMult).toFixed(1);
+      
+      // 1. Executive Center Updates
+      document.getElementById('kpi-exec-revenue').innerText = '₹' + calcRev + ' Cr';
+      document.getElementById('kpi-exec-profit').innerText = '₹' + calcProfit + ' Cr';
+      document.getElementById('kpi-exec-orders').innerText = reg === 'All' && time === 'FY25-26' ? regData.orders : (1.42 * regData.chartMult * timeMult).toFixed(2) + 'M';
+      document.getElementById('kpi-exec-cust').innerText = Math.round(regData.cust * timeMult).toLocaleString();
+      document.getElementById('kpi-exec-reg-cust').innerText = Math.round(regData.regCust).toLocaleString();
+      document.getElementById('kpi-exec-health').innerHTML = regData.health + ' <span style="font-size:14px;font-weight:500">/ 100</span>';
+
+      // 2. Sales Intelligence Updates
+      document.getElementById('kpi-sales-revenue').innerText = '₹' + calcRev + ' Cr';
+      document.getElementById('kpi-sales-profit').innerText = '₹' + calcProfit + ' Cr';
+      document.getElementById('kpi-sales-orders').innerText = (1.42 * regData.chartMult * timeMult).toFixed(2) + 'M';
+      document.getElementById('kpi-sales-units').innerText = (5.41 * regData.chartMult * timeMult).toFixed(2) + 'M';
+      document.getElementById('kpi-sales-discount').innerText = '₹' + (42.3 * regData.chartMult * timeMult).toFixed(1) + ' Cr';
+      document.getElementById('kpi-sales-stores').innerText = regData.stores;
+
+      // 3. Customer Intelligence Updates
+      document.getElementById('kpi-cust-reg').innerText = Math.round(regData.regCust).toLocaleString();
+      document.getElementById('kpi-cust-act').innerText = Math.round(regData.cust * timeMult).toLocaleString();
+
+      // 4. Update Badge & Charts
+      document.getElementById('badge-chart-region').innerText = reg + ' Region (' + time + ')';
+      
+      updateExecChart(regData.chartMult * timeMult);
+      
+      showToast('Dashboard updated for ' + reg + ' Region (' + time + '): Revenue ₹' + calcRev + ' Cr');
+    }
+
+    // Dynamic Chart Update
+    function updateExecChart(mult) {
+      if (chartInstances.exec) {
+        const baseRev = [34.2, 38.5, 36.1, 41.0, 44.2, 42.8, 52.6, 68.4, 46.2, 39.8, 41.5, 40.3];
+        const baseProfit = [16.8, 19.1, 17.8, 20.3, 21.8, 21.2, 26.1, 33.9, 22.8, 19.7, 20.5, 19.9];
+
+        chartInstances.exec.data.datasets[0].data = baseRev.map(v => (v * mult).toFixed(1));
+        chartInstances.exec.data.datasets[1].data = baseProfit.map(v => (v * mult).toFixed(1));
+        chartInstances.exec.update();
+      }
+    }
+
+    // Navigation Tab Switching
+    function switchTab(tabId) {
+      const navLinks = document.querySelectorAll('.nav-link');
+      navLinks.forEach(link => link.classList.remove('active'));
+
+      const viewPanes = document.querySelectorAll('.view-pane');
+      viewPanes.forEach(pane => pane.classList.remove('active'));
+
+      if (event && event.currentTarget) {
+        event.currentTarget.classList.add('active');
+      }
+      
+      const activePane = document.getElementById('pane-' + tabId);
+      if (activePane) {
+        activePane.classList.add('active');
+      }
+
+      const titles = {
+        'executive': ['Executive Command Center', 'Strategic overview & high-level enterprise health metrics'],
+        'sales': ['Sales Intelligence', 'Sales forecasting, pricing strategy & regional breakdown'],
+        'customer': ['Customer Intelligence', 'Customer retention, CLV & demographic segmentation'],
+        'product': ['Product Intelligence', 'Catalog assortment, SKU profitability & category performance'],
+        'marketing': ['Marketing Intelligence', 'Campaign ROI, customer acquisition & channel attribution'],
+        'inventory': ['Inventory Intelligence', 'Replenishment forecasting, stock health & warehouse status'],
+        'data-entry': ['Data Entry Centre', 'Real-time transactional input & live state updating'],
+        'data-warehouse': ['Data Warehouse Architecture', 'Star schema data model & ETL topology explorer'],
+        'about': ['About Nykaa DSS & Master 24 KPIs', 'System documentation, technology stack & 24 KPI Catalogue']
+      };
+
+      if (titles[tabId]) {
+        document.getElementById('page-title').innerText = titles[tabId][0];
+        document.getElementById('page-subtitle').innerText = titles[tabId][1];
+      }
+
+      setTimeout(() => renderCharts(), 50);
+    }
+
+    // Populate Data Tables on Load
+    function populateTables() {
+      // 1. Sales Top Products
+      const salesBody = document.getElementById('sales-products-body');
+      salesBody.innerHTML = productsData.slice(0, 5).map(p => `
+        <tr>
+          <td>${p.Product_ID}</td>
+          <td><code>${p.SKU}</code></td>
+          <td><strong>${p.Product_Name}</strong> (${p.Variant})</td>
+          <td>${p.Brand_Name}</td>
+          <td><span class="badge badge-primary">${p.Category_Name}</span></td>
+          <td>₹${p.MRP}</td>
+          <td style="color:var(--success); font-weight:700">₹${p.Selling_Price}</td>
+          <td>₹${p.Cost_Price}</td>
+          <td>${Math.round(((p.Selling_Price - p.Cost_Price)/p.Selling_Price)*100)}%</td>
+        </tr>
+      `).join('');
+
+      // 2. Customer Table
+      renderCustomerTable(customerData.slice(0, 10));
+
+      // 3. Product Catalog Table
+      renderProductTable(productsData.slice(0, 12));
+
+      // 4. Marketing Table
+      const mktgBody = document.getElementById('mktg-table-body');
+      mktgBody.innerHTML = mktgData.slice(0, 10).map(m => `
+        <tr>
+          <td><code>${m.Marketing_ID}</code></td>
+          <td><strong>${m.Campaign_Name}</strong></td>
+          <td>${m.Campaign_Type}</td>
+          <td>${m.Discount_Value}</td>
+          <td>${m.Start_Date}</td>
+          <td>${m.End_Date}</td>
+          <td><span class="badge badge-primary">${m.Channel}</span></td>
+          <td>${m.Objective}</td>
+          <td><span class="badge ${m.Status==='Active'?'badge-success':'badge-warning'}">${m.Status}</span></td>
+        </tr>
+      `).join('');
+
+      // 5. Warehouse Table
+      const whBody = document.getElementById('wh-table-body');
+      whBody.innerHTML = geoData.map(g => `
+        <tr>
+          <td><code>${g.Geo_ID}</code></td>
+          <td>${g.Region}</td>
+          <td>${g.State}</td>
+          <td>${g.City}</td>
+          <td><strong>${g.Warehouse}</strong></td>
+          <td><span class="badge badge-primary">${g.Warehouse_Code}</span></td>
+          <td><span class="badge badge-success">Operational</span></td>
+        </tr>
+      `).join('');
+
+      // 6. Master 24 KPI Table
+      const kpiBody = document.getElementById('kpi-master-body');
+      kpiBody.innerHTML = masterKPIs.map(k => `
+        <tr>
+          <td><strong>${k.name}</strong></td>
+          <td><code>${k.calc}</code></td>
+          <td><span class="badge badge-primary">${k.source}</span></td>
+          <td>${k.dash}</td>
+          <td>${k.utility}</td>
+          <td><span class="badge badge-warning">${k.visual}</span></td>
+          <td style="color:var(--nykaa-pink); font-weight:700">${k.val}</td>
+        </tr>
+      `).join('');
+    }
+
+    function renderCustomerTable(list) {
+      const custBody = document.getElementById('cust-table-body');
+      custBody.innerHTML = list.map(c => `
+        <tr>
+          <td><code>${c.Customer_ID}</code></td>
+          <td><strong>${c.First_Name} ${c.Last_Name}</strong></td>
+          <td>${c.Gender}</td>
+          <td>${c.Email}</td>
+          <td>${c.Geo_ID}</td>
+          <td><span class="badge badge-primary">${c.Acquisition_Source}</span></td>
+          <td>${c.Preferred_Channel}</td>
+          <td><span class="badge badge-success">${c.Status}</span></td>
+        </tr>
+      `).join('');
+    }
+
+    function renderProductTable(list) {
+      const prodBody = document.getElementById('prod-table-body');
+      prodBody.innerHTML = list.map(p => `
+        <tr>
+          <td><code>${p.SKU}</code></td>
+          <td><strong>${p.Product_Name}</strong></td>
+          <td>${p.Brand_Name}</td>
+          <td><span class="badge badge-primary">${p.Category_Name}</span></td>
+          <td>${p.Subcategory_Name}</td>
+          <td>₹${p.MRP}</td>
+          <td>₹${p.Selling_Price}</td>
+          <td>₹${p.Cost_Price}</td>
+          <td><span class="badge badge-success">${p.Status}</span></td>
+        </tr>
+      `).join('');
+    }
+
+    function filterCustomers() {
+      const query = document.getElementById('cust-search').value.toLowerCase();
+      const filtered = customerData.filter(c => 
+        c.First_Name.toLowerCase().includes(query) || 
+        c.Last_Name.toLowerCase().includes(query) ||
+        c.Email.toLowerCase().includes(query) ||
+        c.Acquisition_Source.toLowerCase().includes(query)
+      );
+      renderCustomerTable(filtered.slice(0, 10));
+    }
+
+    function filterProducts() {
+      const query = document.getElementById('prod-search').value.toLowerCase();
+      const filtered = productsData.filter(p => 
+        p.SKU.toLowerCase().includes(query) || 
+        p.Product_Name.toLowerCase().includes(query) ||
+        p.Brand_Name.toLowerCase().includes(query)
+      );
+      renderProductTable(filtered.slice(0, 12));
+    }
+
+    // What-If Simulator Logic
+    function updateSimulator() {
+      const priceAdj = parseInt(document.getElementById('slider-price').value);
+      const mktgAdj = parseInt(document.getElementById('slider-mktg').value);
+      
+      document.getElementById('val-price').innerText = (priceAdj >= 0 ? '+' : '') + priceAdj + '%';
+      document.getElementById('val-mktg').innerText = '+' + mktgAdj + '%';
+
+      const baseRev = 485.6;
+      const simRev = baseRev * (1 + (priceAdj * 0.4 + mktgAdj * 0.3) / 100);
+      const simProfit = simRev * 0.495;
+
+      document.getElementById('sim-rev').innerText = '₹' + simRev.toFixed(1) + ' Cr';
+      document.getElementById('sim-profit').innerText = '₹' + simProfit.toFixed(1) + ' Cr (49.5%)';
+    }
+
+    // Data Entry Form Handlers
+    function toggleDataEntryForm() {
+      const type = document.getElementById('form-type-select').value;
+      document.getElementById('form-add-product').style.display = type === 'product' ? 'block' : 'none';
+      document.getElementById('form-add-customer').style.display = type === 'customer' ? 'block' : 'none';
+    }
+
+    function handleProductSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('p-name').value;
+      const brand = document.getElementById('p-brand').value;
+      const cat = document.getElementById('p-cat').value;
+      const price = parseFloat(document.getElementById('p-price').value);
+
+      const newProd = {
+        Product_ID: 'PRD' + (productsData.length + 1),
+        SKU: 'SKU' + (productsData.length + 1000),
+        Product_Name: name,
+        Brand_Name: brand,
+        Category_Name: cat,
+        Subcategory_Name: 'General',
+        MRP: Math.round(price * 1.15),
+        Selling_Price: price,
+        Cost_Price: Math.round(price * 0.5),
+        Status: 'Active'
+      };
+
+      productsData.unshift(newProd);
+      renderProductTable(productsData.slice(0, 12));
+
+      const log = document.getElementById('entry-log');
+      log.innerHTML = '<div>[NEW PRODUCT]: Saved ' + name + ' (' + brand + ')</div>' + log.innerHTML;
+      
+      showToast('Added product "' + name + '" to live dataset!');
+      e.target.reset();
+    }
+
+    function handleCustomerSubmit(e) {
+      e.preventDefault();
+      const fname = document.getElementById('c-fname').value;
+      const lname = document.getElementById('c-lname').value;
+      const email = document.getElementById('c-email').value;
+      const channel = document.getElementById('c-channel').value;
+
+      const newCust = {
+        Customer_ID: 'CUST' + (customerData.length + 1000),
+        First_Name: fname,
+        Last_Name: lname,
+        Gender: 'Female',
+        Email: email,
+        Geo_ID: 'GEO001',
+        Acquisition_Source: 'Direct Input',
+        Preferred_Channel: channel,
+        Status: 'Active'
+      };
+
+      customerData.unshift(newCust);
+      renderCustomerTable(customerData.slice(0, 10));
+
+      const log = document.getElementById('entry-log');
+      log.innerHTML = '<div>[NEW CUSTOMER]: Added ' + fname + ' ' + lname + '</div>' + log.innerHTML;
+
+      showToast('Added customer "' + fname + ' ' + lname + '" to database!');
+      e.target.reset();
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-message').innerText = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3500);
+    }
+
+    // Render Canvas Charts with Chart.js using Light Mode Theme
+    let chartInstances = {};
+
+    function renderCharts() {
+      Chart.defaults.color = '#64748b';
+      Chart.defaults.font.family = 'Inter';
+
+      // 1. Exec Revenue Trend Chart
+      const ctxExec = document.getElementById('chart-exec-revenue');
+      if (ctxExec && !chartInstances.exec) {
+        chartInstances.exec = new Chart(ctxExec, {
+          type: 'line',
+          data: {
+            labels: ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'],
+            datasets: [
+              {
+                label: 'Gross Revenue (₹ Cr)',
+                data: [34.2, 38.5, 36.1, 41.0, 44.2, 42.8, 52.6, 68.4, 46.2, 39.8, 41.5, 40.3],
+                borderColor: '#ff5286',
+                backgroundColor: 'rgba(255, 82, 134, 0.1)',
+                fill: true,
+                tension: 0.3
+              },
+              {
+                label: 'Gross Profit (₹ Cr)',
+                data: [16.8, 19.1, 17.8, 20.3, 21.8, 21.2, 26.1, 33.9, 22.8, 19.7, 20.5, 19.9],
+                borderColor: '#10b981',
+                backgroundColor: 'transparent',
+                borderDash: [4, 4],
+                tension: 0.3
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'top' } },
+            scales: { y: { grid: { color: '#e2e8f0' } }, x: { grid: { display: false } } }
+          }
+        });
+      }
+
+      // 2. Sales Regional Chart
+      const ctxRegion = document.getElementById('chart-sales-region');
+      if (ctxRegion && !chartInstances.region) {
+        chartInstances.region = new Chart(ctxRegion, {
+          type: 'doughnut',
+          data: {
+            labels: ['South (8 Stores)', 'West (7 Stores)', 'North (6 Stores)', 'East (3 Stores)'],
+            datasets: [{
+              data: [32, 28, 24, 16],
+              backgroundColor: ['#ff5286', '#ff8dae', '#0284c7', '#10b981']
+            }]
+          },
+          options: { responsive: true, maintainAspectRatio: false }
+        });
+      }
+
+      // 3. Customer Sources Chart
+      const ctxSource = document.getElementById('chart-cust-source');
+      if (ctxSource && !chartInstances.source) {
+        chartInstances.source = new Chart(ctxSource, {
+          type: 'bar',
+          data: {
+            labels: ['Google Ads', 'Instagram', 'Nykaa App', 'Organic', 'Referral', 'Meta Ads'],
+            datasets: [{
+              label: 'Customers Acquired',
+              data: [993, 875, 771, 765, 378, 378],
+              backgroundColor: '#ff5286'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: { y: { grid: { color: '#e2e8f0' } }, x: { grid: { display: false } } }
+          }
+        });
+      }
+
+      // 4. Customer Channel Chart
+      const ctxChannel = document.getElementById('chart-cust-channel');
+      if (ctxChannel && !chartInstances.channel) {
+        chartInstances.channel = new Chart(ctxChannel, {
+          type: 'pie',
+          data: {
+            labels: ['Mobile App (69.2%)', 'Website (22.3%)', 'Retail Store (8.5%)'],
+            datasets: [{
+              data: [3458, 1116, 426],
+              backgroundColor: ['#ff5286', '#ff8dae', '#10b981']
+            }]
+          },
+          options: { responsive: true, maintainAspectRatio: false }
+        });
+      }
+
+      // 5. Loyalty Enrolment Chart
+      const ctxLoyalty = document.getElementById('chart-cust-loyalty');
+      if (ctxLoyalty && !chartInstances.loyalty) {
+        chartInstances.loyalty = new Chart(ctxLoyalty, {
+          type: 'doughnut',
+          data: {
+            labels: ['Enrolled (44.8%)', 'Standard (55.2%)'],
+            datasets: [{
+              data: [2240, 2760],
+              backgroundColor: ['#ff5286', '#cbd5e1']
+            }]
+          },
+          options: { responsive: true, maintainAspectRatio: false }
+        });
+      }
+
+      // 6. Product Category Chart
+      const ctxProdCat = document.getElementById('chart-prod-category');
+      if (ctxProdCat && !chartInstances.prodCat) {
+        chartInstances.prodCat = new Chart(ctxProdCat, {
+          type: 'bar',
+          data: {
+            labels: ['Makeup', 'Skincare', 'Haircare', 'Bath & Body', 'Fragrance', 'Personal Care'],
+            datasets: [{
+              label: 'SKU Count in Dataset',
+              data: [169, 160, 83, 56, 27, 5],
+              backgroundColor: '#ff8dae'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: { y: { grid: { color: '#e2e8f0' } }, x: { grid: { display: false } } }
+          }
+        });
+      }
+
+      // 7. Marketing Channel Revenue Chart
+      const ctxMktgChan = document.getElementById('chart-mktg-channel');
+      if (ctxMktgChan && !chartInstances.mktgChan) {
+        chartInstances.mktgChan = new Chart(ctxMktgChan, {
+          type: 'bar',
+          data: {
+            labels: ['Instagram', 'Google Ads', 'Meta Ads', 'App Push', 'YouTube', 'Email'],
+            datasets: [{
+              label: 'Revenue Driven (₹ Cr)',
+              data: [142.5, 128.0, 84.2, 65.0, 42.1, 23.8],
+              backgroundColor: '#ff5286'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: { y: { grid: { color: '#e2e8f0' } }, x: { grid: { display: false } } }
+          }
+        });
+      }
+    }
+
+    // Initial Load
+    window.addEventListener('DOMContentLoaded', () => {
+      populateTables();
+      renderCharts();
+    });
+  </script>
+</body>
+</html>
