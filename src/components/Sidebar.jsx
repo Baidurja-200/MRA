@@ -10,11 +10,12 @@ import {
   PenTool, 
   Database, 
   Info,
-  ChevronRight
+  ChevronRight,
+  X
 } from 'lucide-react';
 
 export const Sidebar = () => {
-  const { activeModule, setActiveModule } = useData();
+  const { activeModule, setActiveModule, sidebarOpen, closeSidebar } = useData();
 
   const navItems = [
     { id: 'executive', label: 'Executive Command', icon: LayoutDashboard, category: 'Core Strategy' },
@@ -28,49 +29,67 @@ export const Sidebar = () => {
     { id: 'about', label: 'About & Documentation', icon: Info, category: 'System Info' }
   ];
 
+  const handleNavClick = (id) => {
+    setActiveModule(id);
+    closeSidebar();
+  };
+
   return (
-    <aside className="dss-sidebar">
-      <div className="sidebar-brand">
-        <div className="nykaa-logo-wrapper">
-          <img src="/nykaa_logo.png" alt="Nykaa Logo" className="nykaa-logo-img" />
-          <div className="nykaa-logo-text">NYKAA</div>
+    <>
+      <div 
+        className={`sidebar-overlay ${sidebarOpen ? 'open' : ''}`}
+        onClick={closeSidebar}
+        aria-label="Close navigation menu"
+      ></div>
+
+      <aside className={`dss-sidebar ${sidebarOpen ? 'open' : ''}`}>
+        <div className="sidebar-brand">
+          <div className="sidebar-brand-header">
+            <div className="nykaa-logo-wrapper">
+              <img src="/nykaa_logo.png" alt="Nykaa Logo" className="nykaa-logo-img" />
+              <div className="nykaa-logo-text">NYKAA</div>
+            </div>
+            <button className="mobile-close-btn" onClick={closeSidebar} aria-label="Close Menu">
+              <X size={22} />
+            </button>
+          </div>
+          <span className="nykaa-tagline">INSIGHT DSS</span>
         </div>
-        <span className="nykaa-tagline">INSIGHT DSS</span>
-      </div>
 
-      <nav className="sidebar-nav">
-        {navItems.map((item, idx) => {
-          const Icon = item.icon;
-          const isActive = activeModule === item.id;
-          const showHeader = idx === 0 || navItems[idx - 1].category !== item.category;
+        <nav className="sidebar-nav">
+          {navItems.map((item, idx) => {
+            const Icon = item.icon;
+            const isActive = activeModule === item.id;
+            const showHeader = idx === 0 || navItems[idx - 1].category !== item.category;
 
-          return (
-            <React.Fragment key={item.id}>
-              {showHeader && (
-                <div className="nav-section-title">{item.category}</div>
-              )}
-              <button
-                className={`nav-btn ${isActive ? 'active' : ''}`}
-                onClick={() => setActiveModule(item.id)}
-              >
-                <Icon size={18} className="nav-icon" />
-                <span className="nav-label">{item.label}</span>
-                {isActive && <ChevronRight size={14} className="active-indicator" />}
-              </button>
-            </React.Fragment>
-          );
-        })}
-      </nav>
+            return (
+              <React.Fragment key={item.id}>
+                {showHeader && (
+                  <div className="nav-section-title">{item.category}</div>
+                )}
+                <button
+                  className={`nav-btn ${isActive ? 'active' : ''}`}
+                  onClick={() => handleNavClick(item.id)}
+                >
+                  <Icon size={18} className="nav-icon" />
+                  <span className="nav-label">{item.label}</span>
+                  {isActive && <ChevronRight size={14} className="active-indicator" />}
+                </button>
+              </React.Fragment>
+            );
+          })}
+        </nav>
 
-      <div className="sidebar-footer">
-        <div className="footer-status">
-          <div className="status-indicator"></div>
-          <div>
-            <div className="footer-title">GCP BigQuery Connected</div>
-            <div className="footer-sub">Real-time OLAP Active</div>
+        <div className="sidebar-footer">
+          <div className="footer-status">
+            <div className="status-indicator"></div>
+            <div>
+              <div className="footer-title">GCP BigQuery Connected</div>
+              <div className="footer-sub">Real-time OLAP Active</div>
+            </div>
           </div>
         </div>
-      </div>
-    </aside>
+      </aside>
+    </>
   );
 };

@@ -8,7 +8,8 @@ import {
   Bell, 
   CheckCircle2, 
   AlertCircle,
-  Database
+  Database,
+  Menu
 } from 'lucide-react';
 
 export const Header = () => {
@@ -19,6 +20,7 @@ export const Header = () => {
     setSelectedRegion, 
     selectedCategory, 
     setSelectedCategory,
+    toggleSidebar,
     toast,
     executiveData
   } = useData();
@@ -26,6 +28,14 @@ export const Header = () => {
   return (
     <header className="dss-header">
       <div className="header-left">
+        <button 
+          className="mobile-toggle-btn" 
+          onClick={toggleSidebar} 
+          aria-label="Open Navigation Menu"
+        >
+          <Menu size={22} />
+        </button>
+
         <div className="brand-badge">
           <Sparkles className="brand-icon" size={20} />
           <div>

@@ -17,6 +17,10 @@ export const DataProvider = ({ children }) => {
   const [timeframe, setTimeframe] = useState('YTD 2026');
   const [selectedRegion, setSelectedRegion] = useState('All');
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const toggleSidebar = () => setSidebarOpen(prev => !prev);
+  const closeSidebar = () => setSidebarOpen(false);
 
   // State slices
   const [executiveData, setExecutiveData] = useState(initialExecutiveData);
@@ -140,6 +144,10 @@ export const DataProvider = ({ children }) => {
       setSelectedRegion,
       selectedCategory,
       setSelectedCategory,
+      sidebarOpen,
+      setSidebarOpen,
+      toggleSidebar,
+      closeSidebar,
       executiveData,
       salesData,
       customerData,
