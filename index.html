@@ -1658,13 +1658,14 @@
       // 4. Update Badge & Charts
       document.getElementById('badge-chart-region').innerText = reg + ' Region (' + time + ')';
       
-      updateExecChart(regData.chartMult * timeMult);
+      updateAllRegionalCharts(reg, regData.chartMult * timeMult);
       
-      showToast('Dashboard updated for ' + reg + ' Region (' + time + '): Revenue ₹' + calcRev + ' Cr');
+      showToast('Dashboard & Graphs updated for ' + reg + ' Region (' + time + '): Revenue ₹' + calcRev + ' Cr');
     }
 
-    // Dynamic Chart Update
-    function updateExecChart(mult) {
+    // Dynamic Chart & Table Updates by Region & State
+    function updateAllRegionalCharts(reg, mult) {
+      // 1. Exec Revenue Trend Line Chart
       if (chartInstances.exec) {
         const baseRev = [34.2, 38.5, 36.1, 41.0, 44.2, 42.8, 52.6, 68.4, 46.2, 39.8, 41.5, 40.3];
         const baseProfit = [16.8, 19.1, 17.8, 20.3, 21.8, 21.2, 26.1, 33.9, 22.8, 19.7, 20.5, 19.9];
@@ -1672,6 +1673,105 @@
         chartInstances.exec.data.datasets[0].data = baseRev.map(v => (v * mult).toFixed(1));
         chartInstances.exec.data.datasets[1].data = baseProfit.map(v => (v * mult).toFixed(1));
         chartInstances.exec.update();
+      }
+
+      // 2. State-Wise Warehousing Footprint Bar Chart
+      if (chartInstances.invCap) {
+        const stateCapacities = {
+          'All': {
+            labels: ['Maharashtra', 'Karnataka', 'Haryana', 'Delhi', 'West Bengal', 'Tamil Nadu', 'Telangana', 'Gujarat', 'Uttar Pradesh', 'Rajasthan', 'Madhya Pradesh', 'Assam'],
+            data: [220, 180, 150, 130, 120, 110, 95, 90, 85, 75, 70, 65]
+          },
+          'North': {
+            labels: ['Haryana (Gurugram/Taoru)', 'Delhi NCR (Rajokari)', 'Uttar Pradesh (Lucknow/Noida)', 'Rajasthan (Jaipur)', 'Punjab (Zirakpur)', 'Jammu & Kashmir', 'Uttarakhand', 'Himachal Pradesh'],
+            data: [150, 130, 85, 75, 65, 35, 30, 25]
+          },
+          'South': {
+            labels: ['Karnataka (Bengaluru)', 'Tamil Nadu (Chennai)', 'Telangana (Hyderabad)', 'Kerala (Kochi)', 'Andhra Pradesh (Visakhapatnam)', 'Puducherry'],
+            data: [180, 110, 95, 60, 50, 20]
+          },
+          'West': {
+            labels: ['Maharashtra (Bhiwandi/Pune)', 'Gujarat (Ahmedabad)', 'Goa (Verna Estate)', 'Dadra & Nagar (Silvassa)'],
+            data: [220, 90, 30, 15]
+          },
+          'East': {
+            labels: ['West Bengal (Kolkata)', 'Assam (Guwahati)', 'Odisha (Bhubaneswar)', 'Bihar (Patna)', 'Jharkhand (Ranchi)', 'Meghalaya', 'Tripura', 'Manipur'],
+            data: [120, 65, 55, 45, 40, 25, 20, 15]
+          }
+        };
+
+        const capData = stateCapacities[reg] || stateCapacities['All'];
+        chartInstances.invCap.data.labels = capData.labels;
+        chartInstances.invCap.data.datasets[0].data = capData.data;
+        chartInstances.invCap.update();
+      }
+
+      // 3. Order Delivery Speed Breakdown Chart
+      if (chartInstances.invDel) {
+        const deliveryBreakdowns = {
+          'All': [38, 46, 16],
+          'North': [42, 45, 13],
+          'South': [44, 43, 13],
+          'West': [45, 42, 13],
+          'East': [28, 48, 24]
+        };
+        chartInstances.invDel.data.datasets[0].data = deliveryBreakdowns[reg] || deliveryBreakdowns['All'];
+        chartInstances.invDel.update();
+      }
+
+      // 4. Regional Sales Breakdown Chart
+      if (chartInstances.region) {
+        const regionalSales = {
+          'All': {
+            labels: ['South (8 Stores)', 'West (7 Stores)', 'North (6 Stores)', 'East (3 Stores)'],
+            data: [32, 28, 24, 16]
+          },
+          'North': {
+            labels: ['Delhi NCR', 'Haryana', 'Uttar Pradesh', 'Punjab & Chd', 'Rajasthan'],
+            data: [38, 26, 18, 11, 7]
+          },
+          'South': {
+            labels: ['Karnataka', 'Tamil Nadu', 'Telangana', 'Kerala', 'Andhra Pradesh'],
+            data: [35, 27, 22, 11, 5]
+          },
+          'West': {
+            labels: ['Maharashtra', 'Gujarat', 'Goa', 'Dadra & Nagar'],
+            data: [58, 32, 7, 3]
+          },
+          'East': {
+            labels: ['West Bengal', 'Assam & NE', 'Odisha', 'Bihar', 'Jharkhand'],
+            data: [42, 24, 16, 11, 7]
+          }
+        };
+        const salesData = regionalSales[reg] || regionalSales['All'];
+        chartInstances.region.data.labels = salesData.labels;
+        chartInstances.region.data.datasets[0].data = salesData.data;
+        chartInstances.region.update();
+      }
+
+      // 5. Product Category Revenue Chart
+      if (chartInstances.prodCatRev) {
+        const baseCatRev = [164.2, 155.4, 78.5, 48.2, 31.5, 7.8];
+        chartInstances.prodCatRev.data.datasets[0].data = baseCatRev.map(v => (v * mult).toFixed(1));
+        chartInstances.prodCatRev.update();
+      }
+
+      // 6. Customer Acquisition Sources Chart
+      if (chartInstances.source) {
+        const baseSourceData = [993, 875, 771, 765, 378, 378];
+        chartInstances.source.data.datasets[0].data = baseSourceData.map(v => Math.round(v * mult));
+        chartInstances.source.update();
+      }
+
+      // 7. Filter Warehouse Table by Region
+      const whSearchInput = document.getElementById('wh-search');
+      if (whSearchInput) whSearchInput.value = '';
+      
+      if (reg === 'All') {
+        renderWarehouseTable(geoData);
+      } else {
+        const filteredWH = geoData.filter(g => g.Region === reg || (reg === 'East' && g.Region === 'North East') || (reg === 'North' && g.Region === 'Central'));
+        renderWarehouseTable(filteredWH);
       }
     }
 
