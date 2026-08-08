@@ -824,7 +824,7 @@
         <div class="grid-3-1">
           <div class="card">
             <div class="card-header">
-              <div class="card-title"><i class="fa-solid fa-chart-area"></i> Revenue Trend (SUM Net_Sales by Date - Fact_Sales + Dim_Date)</div>
+              <div class="card-title"><i class="fa-solid fa-chart-area"></i> Gross Revenue & Net Profit Trend</div>
               <span class="badge badge-primary" id="badge-chart-region">All Regions</span>
             </div>
             <div class="chart-container">
@@ -854,7 +854,7 @@
         <div class="grid-2">
           <div class="card">
             <div class="card-header">
-              <div class="card-title"><i class="fa-solid fa-award"></i> Revenue by Brand (Fact_Sales + Dim_Brand)</div>
+              <div class="card-title"><i class="fa-solid fa-award"></i> Brand Sales Revenue Performance</div>
             </div>
             <table class="data-table">
               <thead>
@@ -970,9 +970,9 @@
 
           <div class="card">
             <div class="card-header">
-              <div class="card-title"><i class="fa-solid fa-map-location-dot"></i> Revenue by Store (Fact_Sales + Dim_Store)</div>
+              <div class="card-title"><i class="fa-solid fa-shop"></i> Store Sales Revenue Performance</div>
             </div>
-            <div class="chart-container">
+            <div class="chart-container" style="height:320px">
               <canvas id="chart-sales-region"></canvas>
             </div>
           </div>
@@ -980,7 +980,7 @@
 
         <div class="card">
           <div class="card-header">
-            <div class="card-title"><i class="fa-solid fa-star"></i> Product Demand & Demand Matrix (Units Sold vs Net Sales)</div>
+            <div class="card-title"><i class="fa-solid fa-star"></i> Product Demand & Pricing Matrix</div>
           </div>
           <table class="data-table">
             <thead>
@@ -1035,7 +1035,7 @@
         <div class="grid-2">
           <div class="card">
             <div class="card-header">
-              <div class="card-title"><i class="fa-solid fa-pie-chart"></i> Preferred Channel (Dim_Customer)</div>
+              <div class="card-title"><i class="fa-solid fa-pie-chart"></i> Customer Preferred Order Channel</div>
             </div>
             <div class="chart-container">
               <canvas id="chart-cust-channel"></canvas>
@@ -1110,7 +1110,7 @@
           <!-- SKU Count by Category Chart -->
           <div class="card">
             <div class="card-header">
-              <div class="card-title"><i class="fa-solid fa-boxes-stacked"></i> SKU Count by Category (Dim_Product + Dim_Category)</div>
+              <div class="card-title"><i class="fa-solid fa-boxes-stacked"></i> SKU Count by Category</div>
               <span class="badge badge-primary">500 Total SKUs</span>
             </div>
             <div class="chart-container">
@@ -1121,7 +1121,7 @@
           <!-- Revenue by Category Chart -->
           <div class="card">
             <div class="card-header">
-              <div class="card-title"><i class="fa-solid fa-chart-column"></i> Revenue by Category (Fact_Sales + Dim_Category)</div>
+              <div class="card-title"><i class="fa-solid fa-chart-column"></i> Revenue by Category</div>
               <span class="badge badge-success">₹485.6 Cr Total</span>
             </div>
             <div class="chart-container">
@@ -1155,7 +1155,7 @@
 
         <div class="card">
           <div class="card-header">
-            <div class="card-title"><i class="fa-solid fa-table"></i> Complete Product Catalog Directory (from Spreadsheet)</div>
+            <div class="card-title"><i class="fa-solid fa-table"></i> Master Product Catalog Directory</div>
             <input type="text" id="prod-search" placeholder="Search by Category, Subcategory, Brand, SKU, or Name..." oninput="filterProducts()" class="form-control" style="width:360px; padding:6px 12px">
           </div>
           <table class="data-table">
@@ -1211,7 +1211,7 @@
         <div class="grid-2">
           <div class="card">
             <div class="card-header">
-              <div class="card-title"><i class="fa-solid fa-chart-column"></i> Revenue by Channel (Fact_Sales)</div>
+              <div class="card-title"><i class="fa-solid fa-chart-column"></i> Marketing Channel Revenue Share</div>
             </div>
             <div class="chart-container">
               <canvas id="chart-mktg-channel"></canvas>
@@ -1220,7 +1220,7 @@
 
           <div class="card">
             <div class="card-header">
-              <div class="card-title"><i class="fa-solid fa-chart-pie"></i> Acquisition Source (Dim_Customer)</div>
+              <div class="card-title"><i class="fa-solid fa-chart-pie"></i> Customer Acquisition Sources</div>
             </div>
             <div class="chart-container">
               <canvas id="chart-cust-source"></canvas>
@@ -1230,7 +1230,7 @@
 
         <div class="card">
           <div class="card-header">
-            <div class="card-title"><i class="fa-solid fa-rectangle-ad"></i> Campaign Performance (Fact_Sales + Dim_Marketing)</div>
+            <div class="card-title"><i class="fa-solid fa-rectangle-ad"></i> Marketing Campaign Performance</div>
             <input type="text" id="mktg-search" placeholder="Search by Campaign Name, Type, Channel, ID..." oninput="filterMarketing()" class="form-control" style="width:320px; padding:6px 12px">
           </div>
           <table class="data-table">
@@ -1322,7 +1322,7 @@
           </div>
           <div class="card">
             <div class="card-header">
-              <div class="card-title"><i class="fa-solid fa-truck-fast"></i> Order Delivery Speed & Regional Fulfillment (%)</div>
+              <div class="card-title"><i class="fa-solid fa-truck-fast"></i> Order Delivery Speed & Timeline Breakdown (%)</div>
             </div>
             <div class="chart-container">
               <canvas id="chart-inv-delivery"></canvas>
@@ -1332,7 +1332,7 @@
 
         <div class="card" style="margin-top:20px;">
           <div class="card-header">
-            <div class="card-title"><i class="fa-solid fa-truck-ramp-box"></i> Distribution Centers & National Warehousing Network (Spreadsheet + Nykaa Industry Intelligence)</div>
+            <div class="card-title"><i class="fa-solid fa-truck-ramp-box"></i> Distribution Centers & National Warehousing Network</div>
             <input type="text" id="wh-search" placeholder="Search by Region, City, State, Warehouse..." oninput="filterWarehouse()" class="form-control" style="width:340px; padding:6px 12px">
           </div>
           <table class="data-table">
@@ -1719,33 +1719,33 @@
         chartInstances.invDel.update();
       }
 
-      // 4. Regional Sales Breakdown Chart
+      // 4. Store Sales Revenue Chart by Region (chartInstances.region)
       if (chartInstances.region) {
-        const regionalSales = {
+        const regionalStoreRevenues = {
           'All': {
-            labels: ['South (8 Stores)', 'West (7 Stores)', 'North (6 Stores)', 'East (3 Stores)'],
-            data: [32, 28, 24, 16]
+            labels: ['Phoenix Palladium (Mumbai)', 'Select Citywalk (Delhi)', 'UB City (Bengaluru)', 'High Street Phoenix (Mumbai)', 'Phoenix Marketcity (Pune)', 'DLF Promenade (Delhi)', 'Quest Mall (Kolkata)', 'Inorbit Mall (Hyderabad)', 'Express Avenue (Chennai)', 'Lulu Mall (Kochi)'],
+            data: [42.5, 38.2, 35.8, 31.6, 28.4, 28.6, 24.1, 22.6, 21.0, 18.5]
           },
           'North': {
-            labels: ['Delhi NCR', 'Haryana', 'Uttar Pradesh', 'Punjab & Chd', 'Rajasthan'],
-            data: [38, 26, 18, 11, 7]
+            labels: ['Select Citywalk (New Delhi)', 'DLF Promenade (New Delhi)', 'Pacific Mall (New Delhi)', 'Lulu Mall (Lucknow)', 'Elante Mall (Chandigarh)'],
+            data: [38.2, 28.6, 22.5, 14.8, 12.4]
           },
           'South': {
-            labels: ['Karnataka', 'Tamil Nadu', 'Telangana', 'Kerala', 'Andhra Pradesh'],
-            data: [35, 27, 22, 11, 5]
+            labels: ['UB City (Bengaluru)', 'Inorbit Mall (Hyderabad)', 'Express Avenue (Chennai)', 'Lulu Mall (Kochi)', 'Forum Mall (Bengaluru)', 'VR Chennai (Chennai)', 'Forum Kochi (Kochi)'],
+            data: [35.8, 22.6, 21.0, 18.5, 16.4, 14.2, 12.8]
           },
           'West': {
-            labels: ['Maharashtra', 'Gujarat', 'Goa', 'Dadra & Nagar'],
-            data: [58, 32, 7, 3]
+            labels: ['Phoenix Palladium (Mumbai)', 'High Street Phoenix (Mumbai)', 'Phoenix Marketcity (Pune)', 'Seawoods Grand Central (Mumbai)', 'Ahmedabad One (Gujarat)', 'Nexus Ahmedabad'],
+            data: [42.5, 31.6, 28.4, 17.3, 16.2, 12.0]
           },
           'East': {
-            labels: ['West Bengal', 'Assam & NE', 'Odisha', 'Bihar', 'Jharkhand'],
-            data: [42, 24, 16, 11, 7]
+            labels: ['Quest Mall (Kolkata)', 'South City Mall (Kolkata)', 'DB City Mall (Central)', 'Esplanade Mall (Bhubaneswar)'],
+            data: [24.1, 19.8, 18.4, 15.4]
           }
         };
-        const salesData = regionalSales[reg] || regionalSales['All'];
-        chartInstances.region.data.labels = salesData.labels;
-        chartInstances.region.data.datasets[0].data = salesData.data;
+        const storeData = regionalStoreRevenues[reg] || regionalStoreRevenues['All'];
+        chartInstances.region.data.labels = storeData.labels;
+        chartInstances.region.data.datasets[0].data = storeData.data;
         chartInstances.region.update();
       }
 
@@ -2168,19 +2168,50 @@
         });
       }
 
-      // 2. Sales Regional Chart
+      // 2. Store Sales Revenue Chart (Horizontal Bar Chart with ₹ Cr Revenue)
       const ctxRegion = document.getElementById('chart-sales-region');
       if (ctxRegion && !chartInstances.region) {
         chartInstances.region = new Chart(ctxRegion, {
-          type: 'doughnut',
+          type: 'bar',
           data: {
-            labels: ['South (8 Stores)', 'West (7 Stores)', 'North (6 Stores)', 'East (3 Stores)'],
+            labels: [
+              'Phoenix Palladium (Mumbai)', 
+              'Select Citywalk (Delhi)', 
+              'UB City (Bengaluru)', 
+              'High Street Phoenix (Mumbai)', 
+              'DLF Promenade (Delhi)',
+              'Phoenix Marketcity (Pune)', 
+              'Quest Mall (Kolkata)', 
+              'Inorbit Mall (Hyderabad)', 
+              'Express Avenue (Chennai)', 
+              'Lulu Mall (Kochi)'
+            ],
             datasets: [{
-              data: [32, 28, 24, 16],
-              backgroundColor: ['#ff5286', '#ff8dae', '#0284c7', '#10b981']
+              label: 'Store Sales Revenue (₹ Cr)',
+              data: [42.5, 38.2, 35.8, 31.6, 28.6, 28.4, 24.1, 22.6, 21.0, 18.5],
+              backgroundColor: '#ff5286',
+              borderRadius: 4
             }]
           },
-          options: { responsive: true, maintainAspectRatio: false }
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            indexAxis: 'y',
+            plugins: {
+              legend: { position: 'top' },
+              tooltip: {
+                callbacks: {
+                  label: function(context) {
+                    return ' Revenue: ₹' + context.raw + ' Cr';
+                  }
+                }
+              }
+            },
+            scales: {
+              x: { grid: { color: '#e2e8f0' }, title: { display: true, text: 'Sales Revenue (₹ Cr)' } },
+              y: { grid: { display: false } }
+            }
+          }
         });
       }
 
