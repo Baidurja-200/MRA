@@ -27,6 +27,62 @@ export const AboutView = () => {
         </div>
       </div>
 
+      {/* Group Project Credits & Team Members */}
+      <div className="dss-card" style={{ background: 'linear-gradient(135deg, rgba(233, 30, 99, 0.15) 0%, rgba(156, 39, 176, 0.1) 100%)', borderColor: 'var(--border-glow)', marginBottom: '24px' }}>
+        <div className="dss-card-header">
+          <div className="dss-card-title">
+            <Sparkles size={18} style={{ color: 'var(--nykaa-pink)' }} />
+            <span>Group Project by Group 18</span>
+          </div>
+          <span className="badge badge-nykaa">Group 18</span>
+        </div>
+        <p style={{ color: 'var(--text-muted)', marginBottom: '16px', fontSize: '0.88rem' }}>
+          This Decision Support System (DSS) application was developed as a collaborative enterprise analytics group project by <strong>Group 18</strong>.
+        </p>
+
+        <div className="grid-5">
+          <div style={{ background: 'rgba(18, 9, 25, 0.8)', padding: '14px', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: 'var(--grad-nykaa)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.82rem' }}>IS</div>
+            <div>
+              <div style={{ fontWeight: 700, color: '#fff', fontSize: '0.88rem' }}>Ishika Singh</div>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Group 18 Member</div>
+            </div>
+          </div>
+
+          <div style={{ background: 'rgba(18, 9, 25, 0.8)', padding: '14px', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: 'var(--grad-nykaa)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.82rem' }}>FK</div>
+            <div>
+              <div style={{ fontWeight: 700, color: '#fff', fontSize: '0.85rem' }}>Febin Francis Kavalakatt</div>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Group 18 Member</div>
+            </div>
+          </div>
+
+          <div style={{ background: 'rgba(18, 9, 25, 0.8)', padding: '14px', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: 'var(--grad-nykaa)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.82rem' }}>BB</div>
+            <div>
+              <div style={{ fontWeight: 700, color: '#fff', fontSize: '0.88rem' }}>Baidurja Biswas</div>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Group 18 Member</div>
+            </div>
+          </div>
+
+          <div style={{ background: 'rgba(18, 9, 25, 0.8)', padding: '14px', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: 'var(--grad-nykaa)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.82rem' }}>HM</div>
+            <div>
+              <div style={{ fontWeight: 700, color: '#fff', fontSize: '0.88rem' }}>Haritha M A</div>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Group 18 Member</div>
+            </div>
+          </div>
+
+          <div style={{ background: 'rgba(18, 9, 25, 0.8)', padding: '14px', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: 'var(--grad-nykaa)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.82rem' }}>SM</div>
+            <div>
+              <div style={{ fontWeight: 700, color: '#fff', fontSize: '0.88rem' }}>Sarath M S</div>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Group 18 Member</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Overview & Objectives */}
       <div className="grid-2">
         <div className="dss-card">
