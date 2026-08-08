@@ -1907,7 +1907,55 @@
       renderKPIMasterTable(masterKPIs);
     }
 
-    // Render & Filter Live Product Demand & Matrix Directory (All SKUs classified by Quadrant)
+    // Helper to Classify SKUs into 4 Strategic DSS Quadrants
+    function getSKUQuadrant(p) {
+      const sp = Number(p.Selling_Price) || Number(p.MRP) || 500;
+      const cp = Number(p.Cost_Price) || (sp * 0.52);
+      const margin = Math.round(((sp - cp) / sp) * 100);
+
+      const name = (p.Product_Name || '').toLowerCase();
+      const brand = (p.Brand_Name || '').toLowerCase();
+
+      // Q3 Liquidation Alerts: Low price (< 450) or body deos/lip balms/small travel minis/clearance items
+      if (sp < 450 || name.includes('deo') || name.includes('balm') || name.includes('mini') || name.includes('talc') || (margin < 48 && sp < 650)) {
+        return {
+          code: 'Q3',
+          label: 'Q3: Liquidation Alert',
+          html: '<span class="badge" style="background:#fee2e2; color:#dc2626; border:1px solid #fca5a5"><i class="fa-solid fa-fire-flame-curved"></i> Q3: Liquidation Alert</span>',
+          searchTerms: 'q3 liquidation alert quadrant 3 clear'
+        };
+      }
+
+      // Q4 Niche Marketplace: High price (sp >= 850) with niche luxury appeal or lower turnover/specialty niche lines
+      if ((sp >= 850 && (name.includes('palette') || name.includes('lash') || name.includes('night') || name.includes('repair') || name.includes('gift') || name.includes('ruby woo') || brand.includes('ordinary') || brand.includes('huda') || brand.includes('clinique'))) || (sp >= 950 && margin < 52)) {
+        return {
+          code: 'Q4',
+          label: 'Q4: Niche Marketplace',
+          html: '<span class="badge" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc"><i class="fa-solid fa-cubes"></i> Q4: Niche Marketplace</span>',
+          searchTerms: 'q4 niche marketplace quadrant 4'
+        };
+      }
+
+      // Q1 Premium Anchored: High Price (sp >= 750) & High Margin
+      if (sp >= 750) {
+        return {
+          code: 'Q1',
+          label: 'Q1: Premium Anchored',
+          html: '<span class="badge badge-primary"><i class="fa-solid fa-crown"></i> Q1: Premium Anchored</span>',
+          searchTerms: 'q1 premium anchored quadrant 1'
+        };
+      }
+
+      // Q2 Volume Drivers: High Demand Everyday Beauty & Skincare under 750
+      return {
+        code: 'Q2',
+        label: 'Q2: Volume Driver',
+        html: '<span class="badge badge-success"><i class="fa-solid fa-chart-line"></i> Q2: Volume Driver</span>',
+        searchTerms: 'q2 volume driver quadrant 2'
+      };
+    }
+
+    // Render & Filter Live Product Demand & Matrix Directory (All SKUs classified across Q1-Q4)
     function renderMatrixProducts(dataList) {
       const salesBody = document.getElementById('sales-products-body');
       const countBadge = document.getElementById('matrix-count-badge');
@@ -1916,24 +1964,14 @@
       if (!salesBody) return;
 
       if (!dataList || dataList.length === 0) {
-        salesBody.innerHTML = `<tr><td colspan="10" style="text-align:center; padding:20px; color:var(--text-muted)">No matching products found in database matrix. Try searching "Lakmé", "Serum", "Q1", "Maybelline", "Volume Driver"...</td></tr>`;
+        salesBody.innerHTML = `<tr><td colspan="10" style="text-align:center; padding:20px; color:var(--text-muted)">No matching products found in database matrix. Try searching "Lakmé", "Serum", "Q1", "Q3", "Q4", "Maybelline", "Volume Driver"...</td></tr>`;
         return;
       }
 
       salesBody.innerHTML = dataList.map((p, idx) => {
         const margin = Math.round(((p.Selling_Price - p.Cost_Price) / p.Selling_Price) * 100);
-        let quadBadge = '';
-        if (p.MRP >= 800 && margin >= 45) {
-          quadBadge = '<span class="badge badge-primary">Q1: Premium Anchored</span>';
-        } else if (p.MRP < 800 && margin >= 45) {
-          quadBadge = '<span class="badge badge-success">Q2: Volume Driver</span>';
-        } else if (p.MRP < 600 && margin < 45) {
-          quadBadge = '<span class="badge" style="background:#fee2e2; color:#dc2626; border:1px solid #fca5a5">Q3: Liquidation Alert</span>';
-        } else {
-          quadBadge = '<span class="badge" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc">Q4: Niche Marketplace</span>';
-        }
-
-        const prdId = p.Product_ID || ('PRD' + String(idx + 1).padStart(4, '0'));
+        const quad = getSKUQuadrant(p, idx);
+        const prdId = p.Product_ID || ('PRD' + String(p.SKU_ID || (idx + 1)).padStart(4, '0'));
 
         return `
           <tr>
@@ -1946,7 +1984,7 @@
             <td style="color:var(--success); font-weight:700">₹${p.Selling_Price}</td>
             <td>₹${p.Cost_Price}</td>
             <td>${margin}%</td>
-            <td>${quadBadge}</td>
+            <td>${quad.html}</td>
           </tr>
         `;
       }).join('');
@@ -1962,14 +2000,8 @@
         return;
       }
 
-      const filtered = productsData.filter(p => {
-        const margin = Math.round(((p.Selling_Price - p.Cost_Price) / p.Selling_Price) * 100);
-        let quadText = '';
-        if (p.MRP >= 800 && margin >= 45) quadText = 'q1 premium anchored quadrant 1';
-        else if (p.MRP < 800 && margin >= 45) quadText = 'q2 volume driver quadrant 2';
-        else if (p.MRP < 600 && margin < 45) quadText = 'q3 liquidation alert quadrant 3';
-        else quadText = 'q4 niche marketplace quadrant 4';
-
+      const filtered = productsData.filter((p, idx) => {
+        const quad = getSKUQuadrant(p, idx);
         const matchString = (
           (p.Product_ID || '') + ' ' +
           p.SKU + ' ' +
@@ -1978,7 +2010,7 @@
           p.Brand_Name + ' ' +
           p.Category_Name + ' ' +
           (p.Subcategory_Name || '') + ' ' +
-          quadText
+          quad.searchTerms
         ).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
         return matchString.includes(q);
