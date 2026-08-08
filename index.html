@@ -1043,26 +1043,34 @@
           </div>
 
           <div style="border-top:1px solid var(--border-color); padding-top:16px">
-            <h4 style="font-size:14px; font-weight:700; margin-bottom:12px; color:var(--text-color)"><i class="fa-solid fa-list-check"></i> Live Product Demand & Matrix Directory</h4>
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Product ID</th>
-                  <th>SKU</th>
-                  <th>Product Name</th>
-                  <th>Brand</th>
-                  <th>Category</th>
-                  <th>MRP</th>
-                  <th>Selling Price</th>
-                  <th>Cost Price</th>
-                  <th>Profit Margin</th>
-                  <th>DSS Matrix Quadrant</th>
-                </tr>
-              </thead>
-              <tbody id="sales-products-body">
-                <!-- Populated dynamically from dataset -->
-              </tbody>
-            </table>
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:14px">
+              <h4 style="font-size:14px; font-weight:700; margin:0; color:var(--text-color)"><i class="fa-solid fa-list-check"></i> Live Product Demand & Matrix Directory</h4>
+              <div style="display:flex; gap:10px; align-items:center;">
+                <input type="text" id="matrix-search" placeholder="Search by Product Name, Brand (Lakmé, Maybelline...), SKU, or Quadrant (Q1, Q2, Q3, Q4)..." oninput="filterMatrixProducts()" class="form-control" style="width:420px; padding:6px 12px">
+                <span id="matrix-count-badge" class="badge badge-primary">100 SKUs</span>
+              </div>
+            </div>
+            <div style="max-height:480px; overflow-y:auto; border:1px solid var(--border-color); border-radius:6px">
+              <table class="data-table" style="margin:0">
+                <thead style="position:sticky; top:0; background:var(--card-bg); z-index:2; box-shadow:0 1px 2px rgba(0,0,0,0.05)">
+                  <tr>
+                    <th>Product ID</th>
+                    <th>SKU</th>
+                    <th>Product Name</th>
+                    <th>Brand</th>
+                    <th>Category</th>
+                    <th>MRP</th>
+                    <th>Selling Price</th>
+                    <th>Cost Price</th>
+                    <th>Profit Margin</th>
+                    <th>DSS Matrix Quadrant</th>
+                  </tr>
+                </thead>
+                <tbody id="sales-products-body">
+                  <!-- Populated dynamically from dataset -->
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </section>
@@ -1880,38 +1888,8 @@
 
     // Populate Data Tables on Load
     function populateTables() {
-      // 1. Sales Products Table
-      const salesBody = document.getElementById('sales-products-body');
-      if (salesBody) {
-        salesBody.innerHTML = productsData.slice(0, 8).map((p, idx) => {
-          const margin = Math.round(((p.Selling_Price - p.Cost_Price)/p.Selling_Price)*100);
-          let quadBadge = '';
-          if (p.MRP >= 800 && margin >= 45) {
-            quadBadge = '<span class="badge badge-primary">Q1: Premium Anchored</span>';
-          } else if (p.MRP < 800 && margin >= 45) {
-            quadBadge = '<span class="badge badge-success">Q2: Volume Driver</span>';
-          } else if (p.MRP < 600 && margin < 45) {
-            quadBadge = '<span class="badge" style="background:#fee2e2; color:#dc2626; border:1px solid #fca5a5">Q3: Liquidation Alert</span>';
-          } else {
-            quadBadge = '<span class="badge" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc">Q4: Niche Marketplace</span>';
-          }
-
-          return `
-            <tr>
-              <td><code>PRD00${idx + 1}</code></td>
-              <td><code>${p.SKU}</code></td>
-              <td><strong>${p.Product_Name}</strong> (${p.Variant})</td>
-              <td>${p.Brand_Name}</td>
-              <td><span class="badge badge-primary">${p.Category_Name}</span></td>
-              <td>₹${p.MRP}</td>
-              <td style="color:var(--success); font-weight:700">₹${p.Selling_Price}</td>
-              <td>₹${p.Cost_Price}</td>
-              <td>${margin}%</td>
-              <td>${quadBadge}</td>
-            </tr>
-          `;
-        }).join('');
-      }
+      // 1. Sales Products Matrix Table (All SKUs classified by Quadrant)
+      renderMatrixProducts(productsData);
 
       // 2. Customer Table
       renderCustomerTable(customerData);
@@ -1927,6 +1905,86 @@
 
       // 6. Master 24 KPI Table
       renderKPIMasterTable(masterKPIs);
+    }
+
+    // Render & Filter Live Product Demand & Matrix Directory (All SKUs classified by Quadrant)
+    function renderMatrixProducts(dataList) {
+      const salesBody = document.getElementById('sales-products-body');
+      const countBadge = document.getElementById('matrix-count-badge');
+      if (countBadge) countBadge.innerText = dataList.length + ' SKUs';
+
+      if (!salesBody) return;
+
+      if (!dataList || dataList.length === 0) {
+        salesBody.innerHTML = `<tr><td colspan="10" style="text-align:center; padding:20px; color:var(--text-muted)">No matching products found in database matrix. Try searching "Lakmé", "Serum", "Q1", "Maybelline", "Volume Driver"...</td></tr>`;
+        return;
+      }
+
+      salesBody.innerHTML = dataList.map((p, idx) => {
+        const margin = Math.round(((p.Selling_Price - p.Cost_Price) / p.Selling_Price) * 100);
+        let quadBadge = '';
+        if (p.MRP >= 800 && margin >= 45) {
+          quadBadge = '<span class="badge badge-primary">Q1: Premium Anchored</span>';
+        } else if (p.MRP < 800 && margin >= 45) {
+          quadBadge = '<span class="badge badge-success">Q2: Volume Driver</span>';
+        } else if (p.MRP < 600 && margin < 45) {
+          quadBadge = '<span class="badge" style="background:#fee2e2; color:#dc2626; border:1px solid #fca5a5">Q3: Liquidation Alert</span>';
+        } else {
+          quadBadge = '<span class="badge" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc">Q4: Niche Marketplace</span>';
+        }
+
+        const prdId = p.Product_ID || ('PRD' + String(idx + 1).padStart(4, '0'));
+
+        return `
+          <tr>
+            <td><code>${prdId}</code></td>
+            <td><code>${p.SKU}</code></td>
+            <td><strong>${p.Product_Name}</strong> ${p.Variant ? `(${p.Variant})` : ''}</td>
+            <td>${p.Brand_Name}</td>
+            <td><span class="badge badge-primary">${p.Category_Name}</span></td>
+            <td>₹${p.MRP}</td>
+            <td style="color:var(--success); font-weight:700">₹${p.Selling_Price}</td>
+            <td>₹${p.Cost_Price}</td>
+            <td>${margin}%</td>
+            <td>${quadBadge}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function filterMatrixProducts() {
+      const searchInput = document.getElementById('matrix-search');
+      if (!searchInput) return;
+      
+      const q = searchInput.value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+      if (!q) {
+        renderMatrixProducts(productsData);
+        return;
+      }
+
+      const filtered = productsData.filter(p => {
+        const margin = Math.round(((p.Selling_Price - p.Cost_Price) / p.Selling_Price) * 100);
+        let quadText = '';
+        if (p.MRP >= 800 && margin >= 45) quadText = 'q1 premium anchored quadrant 1';
+        else if (p.MRP < 800 && margin >= 45) quadText = 'q2 volume driver quadrant 2';
+        else if (p.MRP < 600 && margin < 45) quadText = 'q3 liquidation alert quadrant 3';
+        else quadText = 'q4 niche marketplace quadrant 4';
+
+        const matchString = (
+          (p.Product_ID || '') + ' ' +
+          p.SKU + ' ' +
+          p.Product_Name + ' ' +
+          (p.Variant || '') + ' ' +
+          p.Brand_Name + ' ' +
+          p.Category_Name + ' ' +
+          (p.Subcategory_Name || '') + ' ' +
+          quadText
+        ).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+        return matchString.includes(q);
+      });
+
+      renderMatrixProducts(filtered);
     }
 
     function renderCustomerTable(list) {
