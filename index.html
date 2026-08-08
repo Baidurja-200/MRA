@@ -980,26 +980,90 @@
 
         <div class="card">
           <div class="card-header">
-            <div class="card-title"><i class="fa-solid fa-star"></i> Product Demand & Pricing Matrix</div>
+            <div class="card-title"><i class="fa-solid fa-table-cells-large"></i> Product Demand & Pricing Matrix (2x2 Strategic Quadrant Model)</div>
+            <span class="badge badge-primary">Nykaa DSS Algorithmic Matrix</span>
           </div>
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Product ID</th>
-                <th>SKU</th>
-                <th>Product Name</th>
-                <th>Brand</th>
-                <th>Category</th>
-                <th>MRP</th>
-                <th>Selling Price</th>
-                <th>Cost Price</th>
-                <th>Profit Margin</th>
-              </tr>
-            </thead>
-            <tbody id="sales-products-body">
-              <!-- Populated dynamically from dataset -->
-            </tbody>
-          </table>
+
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:16px; margin-bottom:20px">
+            <!-- Quadrant 1 -->
+            <div style="background:#fff0f5; border:1px solid #fbcfe8; border-left:4px solid var(--nykaa-pink); border-radius:8px; padding:16px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px">
+                <strong style="color:var(--nykaa-pink); font-size:15px"><i class="fa-solid fa-crown"></i> Quadrant 1: High Demand / High Pricing</strong>
+                <span class="badge badge-primary">Premium Anchored</span>
+              </div>
+              <div style="font-size:12.5px; color:#475569; margin-bottom:8px">
+                <strong>System Logic:</strong> These items drive healthy profit margins and have highly stable consumer loyalty.
+              </div>
+              <div style="font-size:12.5px; background:#ffffff; padding:10px; border-radius:6px; border:1px solid #f472b6; color:#1e293b">
+                <strong style="color:var(--nykaa-pink)">DSS Decision Output: Price Anchoring.</strong> The system blocks standard checkout discounts for these items. It recommends cross-selling them via loyalty point redemption rewards or combining them into multi-product bundle offers to protect brand equity.
+              </div>
+            </div>
+
+            <!-- Quadrant 2 -->
+            <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-left:4px solid #16a34a; border-radius:8px; padding:16px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px">
+                <strong style="color:#16a34a; font-size:15px"><i class="fa-solid fa-chart-line"></i> Quadrant 2: High Demand / Low Pricing</strong>
+                <span class="badge badge-success">Volume Drivers</span>
+              </div>
+              <div style="font-size:12.5px; color:#475569; margin-bottom:8px">
+                <strong>System Logic:</strong> These products generate massive sales volume, attract new users, and increase active shopper numbers, but operate on slim profit margins.
+              </div>
+              <div style="font-size:12.5px; background:#ffffff; padding:10px; border-radius:6px; border:1px solid #4ade80; color:#1e293b">
+                <strong style="color:#16a34a">DSS Decision Output: Dynamic Inventory Optimization.</strong> The system sets high inventory alerts to avoid stockouts. It triggers programmatic discount matches during high-traffic shopping seasons to increase aggregate transaction values.
+              </div>
+            </div>
+
+            <!-- Quadrant 3 -->
+            <div style="background:#fef2f2; border:1px solid #fecaca; border-left:4px solid #dc2626; border-radius:8px; padding:16px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px">
+                <strong style="color:#dc2626; font-size:15px"><i class="fa-solid fa-fire-flame-curved"></i> Quadrant 3: Low Demand / Low Pricing</strong>
+                <span class="badge" style="background:#fee2e2; color:#dc2626; border:1px solid #fca5a5">Liquidation Alerts</span>
+              </div>
+              <div style="font-size:12.5px; color:#475569; margin-bottom:8px">
+                <strong>System Logic:</strong> This quadrant isolates products that drain capital, occupy warehouse storage, and lower operational distribution metrics.
+              </div>
+              <div style="font-size:12.5px; background:#ffffff; padding:10px; border-radius:6px; border:1px solid #f87171; color:#1e293b">
+                <strong style="color:#dc2626">DSS Decision Output: Automated Clearance Triggers.</strong> The system tracks product age in the warehouse. If a product crosses a 90-day stagnation threshold, the system triggers progressive price markdowns or auto-allocates them as free promotional items at checkout.
+              </div>
+            </div>
+
+            <!-- Quadrant 4 -->
+            <div style="background:#f0f9ff; border:1px solid #bae6fd; border-left:4px solid #0284c7; border-radius:8px; padding:16px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px">
+                <strong style="color:#0284c7; font-size:15px"><i class="fa-solid fa-cubes"></i> Quadrant 4: Low Demand / High Pricing</strong>
+                <span class="badge" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc">Niche Marketplace</span>
+              </div>
+              <div style="font-size:12.5px; color:#475569; margin-bottom:8px">
+                <strong>System Logic:</strong> High individual product value, but low turnover speed and narrow buyer interest.
+              </div>
+              <div style="font-size:12.5px; background:#ffffff; padding:10px; border-radius:6px; border:1px solid #38bdf8; color:#1e293b">
+                <strong style="color:#0284c7">DSS Decision Output: Just-In-Time Marketplace Shifting.</strong> The system moves these products away from an inventory-heavy model. It flags them for direct third-party vendor fulfillment to avoid product expiration and storage depreciation risks.
+              </div>
+            </div>
+          </div>
+
+          <div style="border-top:1px solid var(--border-color); padding-top:16px">
+            <h4 style="font-size:14px; font-weight:700; margin-bottom:12px; color:var(--text-color)"><i class="fa-solid fa-list-check"></i> Live Product Demand & Matrix Directory</h4>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Product ID</th>
+                  <th>SKU</th>
+                  <th>Product Name</th>
+                  <th>Brand</th>
+                  <th>Category</th>
+                  <th>MRP</th>
+                  <th>Selling Price</th>
+                  <th>Cost Price</th>
+                  <th>Profit Margin</th>
+                  <th>DSS Matrix Quadrant</th>
+                </tr>
+              </thead>
+              <tbody id="sales-products-body">
+                <!-- Populated dynamically from dataset -->
+              </tbody>
+            </table>
+          </div>
         </div>
       </section>
 
@@ -1819,18 +1883,34 @@
       // 1. Sales Products Table
       const salesBody = document.getElementById('sales-products-body');
       if (salesBody) {
-        salesBody.innerHTML = productsData.slice(0, 5).map(p => `
-          <tr>
-            <td><code>${p.SKU}</code></td>
-            <td><strong>${p.Product_Name}</strong> (${p.Variant})</td>
-            <td>${p.Brand_Name}</td>
-            <td><span class="badge badge-primary">${p.Category_Name}</span></td>
-            <td>₹${p.MRP}</td>
-            <td style="color:var(--success); font-weight:700">₹${p.Selling_Price}</td>
-            <td>₹${p.Cost_Price}</td>
-            <td>${Math.round(((p.Selling_Price - p.Cost_Price)/p.Selling_Price)*100)}%</td>
-          </tr>
-        `).join('');
+        salesBody.innerHTML = productsData.slice(0, 8).map((p, idx) => {
+          const margin = Math.round(((p.Selling_Price - p.Cost_Price)/p.Selling_Price)*100);
+          let quadBadge = '';
+          if (p.MRP >= 800 && margin >= 45) {
+            quadBadge = '<span class="badge badge-primary">Q1: Premium Anchored</span>';
+          } else if (p.MRP < 800 && margin >= 45) {
+            quadBadge = '<span class="badge badge-success">Q2: Volume Driver</span>';
+          } else if (p.MRP < 600 && margin < 45) {
+            quadBadge = '<span class="badge" style="background:#fee2e2; color:#dc2626; border:1px solid #fca5a5">Q3: Liquidation Alert</span>';
+          } else {
+            quadBadge = '<span class="badge" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc">Q4: Niche Marketplace</span>';
+          }
+
+          return `
+            <tr>
+              <td><code>PRD00${idx + 1}</code></td>
+              <td><code>${p.SKU}</code></td>
+              <td><strong>${p.Product_Name}</strong> (${p.Variant})</td>
+              <td>${p.Brand_Name}</td>
+              <td><span class="badge badge-primary">${p.Category_Name}</span></td>
+              <td>₹${p.MRP}</td>
+              <td style="color:var(--success); font-weight:700">₹${p.Selling_Price}</td>
+              <td>₹${p.Cost_Price}</td>
+              <td>${margin}%</td>
+              <td>${quadBadge}</td>
+            </tr>
+          `;
+        }).join('');
       }
 
       // 2. Customer Table
