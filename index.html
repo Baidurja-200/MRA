@@ -1106,36 +1106,49 @@
           </div>
         </div>
 
-        <div class="grid-3-1">
+        <div class="grid-2" style="margin-bottom:24px">
+          <!-- SKU Count by Category Chart -->
           <div class="card">
             <div class="card-header">
-              <div class="card-title"><i class="fa-solid fa-chart-pie"></i> Revenue by Category (Fact_Sales + Dim_Category)</div>
+              <div class="card-title"><i class="fa-solid fa-boxes-stacked"></i> SKU Count by Category (Dim_Product + Dim_Category)</div>
+              <span class="badge badge-primary">500 Total SKUs</span>
             </div>
             <div class="chart-container">
               <canvas id="chart-prod-category"></canvas>
             </div>
           </div>
 
+          <!-- Revenue by Category Chart -->
           <div class="card">
             <div class="card-header">
-              <div class="card-title"><i class="fa-solid fa-list-check"></i> Subcategory Metrics</div>
+              <div class="card-title"><i class="fa-solid fa-chart-column"></i> Revenue by Category (Fact_Sales + Dim_Category)</div>
+              <span class="badge badge-success">₹485.6 Cr Total</span>
             </div>
-            <div style="font-size:13px; line-height:1.8">
-              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border-color); padding:6px 0">
-                <span>Lipstick & Lip Care</span> <strong style="color:var(--nykaa-pink)">98 SKUs</strong>
-              </div>
-              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border-color); padding:6px 0">
-                <span>Serums & Oils</span> <strong style="color:var(--nykaa-pink)">74 SKUs</strong>
-              </div>
-              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border-color); padding:6px 0">
-                <span>Moisturizers</span> <strong style="color:var(--nykaa-pink)">58 SKUs</strong>
-              </div>
-              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border-color); padding:6px 0">
-                <span>Shampoos & Cleaners</span> <strong style="color:var(--nykaa-pink)">45 SKUs</strong>
-              </div>
-              <div style="display:flex; justify-content:space-between; padding:6px 0">
-                <span>Perfumes & Deos</span> <strong style="color:var(--nykaa-pink)">27 SKUs</strong>
-              </div>
+            <div class="chart-container">
+              <canvas id="chart-prod-category-revenue"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:24px">
+          <div class="card-header">
+            <div class="card-title"><i class="fa-solid fa-list-check"></i> Subcategory Assortment & SKU Distribution</div>
+          </div>
+          <div style="font-size:13px; line-height:1.8; display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px">
+            <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border-color); padding:6px 0">
+              <span>Lipstick & Lip Care</span> <strong style="color:var(--nykaa-pink)">98 SKUs</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border-color); padding:6px 0">
+              <span>Serums & Oils</span> <strong style="color:var(--nykaa-pink)">74 SKUs</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border-color); padding:6px 0">
+              <span>Moisturizers</span> <strong style="color:var(--nykaa-pink)">58 SKUs</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border-color); padding:6px 0">
+              <span>Shampoos & Cleaners</span> <strong style="color:var(--nykaa-pink)">45 SKUs</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; padding:6px 0">
+              <span>Perfumes & Deos</span> <strong style="color:var(--nykaa-pink)">27 SKUs</strong>
             </div>
           </div>
         </div>
@@ -1975,7 +1988,7 @@
         });
       }
 
-      // 6. Product Category Chart
+      // 6a. SKU Count by Category Chart
       const ctxProdCat = document.getElementById('chart-prod-category');
       if (ctxProdCat && !chartInstances.prodCat) {
         chartInstances.prodCat = new Chart(ctxProdCat, {
@@ -1985,12 +1998,38 @@
             datasets: [{
               label: 'SKU Count in Dataset',
               data: [169, 160, 83, 56, 27, 5],
-              backgroundColor: '#ff8dae'
+              backgroundColor: '#ff8dae',
+              borderColor: '#ff5286',
+              borderWidth: 1
             }]
           },
           options: {
             responsive: true,
             maintainAspectRatio: false,
+            plugins: { legend: { position: 'top' } },
+            scales: { y: { grid: { color: '#e2e8f0' } }, x: { grid: { display: false } } }
+          }
+        });
+      }
+
+      // 6b. Revenue by Category Chart (Actual Category Sales Revenue in ₹ Cr)
+      const ctxProdCatRev = document.getElementById('chart-prod-category-revenue');
+      if (ctxProdCatRev && !chartInstances.prodCatRev) {
+        chartInstances.prodCatRev = new Chart(ctxProdCatRev, {
+          type: 'bar',
+          data: {
+            labels: ['Makeup', 'Skincare', 'Haircare', 'Bath & Body', 'Fragrance', 'Personal Care'],
+            datasets: [{
+              label: 'Revenue (₹ Cr)',
+              data: [164.2, 155.4, 78.5, 48.2, 31.5, 7.8],
+              backgroundColor: '#ff5286',
+              borderRadius: 4
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'top' } },
             scales: { y: { grid: { color: '#e2e8f0' } }, x: { grid: { display: false } } }
           }
         });
