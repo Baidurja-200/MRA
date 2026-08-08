@@ -1055,7 +1055,7 @@
         <div class="card">
           <div class="card-header">
             <div class="card-title"><i class="fa-solid fa-address-book"></i> Real Customer Database Directory</div>
-            <input type="text" id="cust-search" placeholder="Search by name, email, or source..." onkeyup="filterCustomers()" class="form-control" style="width:250px; padding:6px 12px">
+            <input type="text" id="cust-search" placeholder="Search by Name, Email, Channel, Source, ID..." oninput="filterCustomers()" class="form-control" style="width:320px; padding:6px 12px">
           </div>
           <table class="data-table">
             <thead>
@@ -1156,7 +1156,7 @@
         <div class="card">
           <div class="card-header">
             <div class="card-title"><i class="fa-solid fa-table"></i> Complete Product Catalog Directory (from Spreadsheet)</div>
-            <input type="text" id="prod-search" placeholder="Search by SKU, Brand, or Product Name..." onkeyup="filterProducts()" class="form-control" style="width:280px; padding:6px 12px">
+            <input type="text" id="prod-search" placeholder="Search by Category, Subcategory, Brand, SKU, or Name..." oninput="filterProducts()" class="form-control" style="width:360px; padding:6px 12px">
           </div>
           <table class="data-table">
             <thead>
@@ -1750,17 +1750,41 @@
       `).join('');
     }
 
+    function renderCustomerTable(list) {
+      const custBody = document.getElementById('cust-table-body');
+      if (!list || list.length === 0) {
+        custBody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:20px; color:var(--text-muted)">No customer records match your search query. Try searching by Name, Email, Channel, or Source.</td></tr>`;
+        return;
+      }
+      custBody.innerHTML = list.map(c => `
+        <tr>
+          <td><code>${c.Customer_ID}</code></td>
+          <td><strong>${c.First_Name} ${c.Last_Name}</strong></td>
+          <td>${c.Gender}</td>
+          <td>${c.Email}</td>
+          <td>${c.Geo_ID}</td>
+          <td><span class="badge badge-primary">${c.Acquisition_Source}</span></td>
+          <td>${c.Preferred_Channel}</td>
+          <td><span class="badge ${c.Status === 'Active' ? 'badge-success' : 'badge-warning'}">${c.Status}</span></td>
+        </tr>
+      `).join('');
+    }
+
     function renderProductTable(list) {
       const prodBody = document.getElementById('prod-table-body');
+      if (!list || list.length === 0) {
+        prodBody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:20px; color:var(--text-muted)">No product SKUs match your search query. Try searching by Category (e.g., Makeup, Skincare, Haircare, Fragrance), Subcategory (e.g., Lipstick, Serum), Brand, or SKU.</td></tr>`;
+        return;
+      }
       prodBody.innerHTML = list.map(p => `
         <tr>
           <td><code>${p.SKU}</code></td>
-          <td><strong>${p.Product_Name}</strong></td>
+          <td><strong>${p.Product_Name}</strong> ${p.Variant ? `(${p.Variant})` : ''}</td>
           <td>${p.Brand_Name}</td>
           <td><span class="badge badge-primary">${p.Category_Name}</span></td>
-          <td>${p.Subcategory_Name}</td>
+          <td>${p.Subcategory_Name || '-'}</td>
           <td>₹${p.MRP}</td>
-          <td>₹${p.Selling_Price}</td>
+          <td style="color:var(--success); font-weight:700">₹${p.Selling_Price}</td>
           <td>₹${p.Cost_Price}</td>
           <td><span class="badge badge-success">${p.Status}</span></td>
         </tr>
@@ -1768,24 +1792,42 @@
     }
 
     function filterCustomers() {
-      const query = document.getElementById('cust-search').value.toLowerCase();
+      const query = document.getElementById('cust-search').value.trim().toLowerCase();
+      if (!query) {
+        renderCustomerTable(customerData.slice(0, 15));
+        return;
+      }
       const filtered = customerData.filter(c => 
-        c.First_Name.toLowerCase().includes(query) || 
-        c.Last_Name.toLowerCase().includes(query) ||
-        c.Email.toLowerCase().includes(query) ||
-        c.Acquisition_Source.toLowerCase().includes(query)
+        (c.Customer_ID && c.Customer_ID.toLowerCase().includes(query)) ||
+        (c.First_Name && c.First_Name.toLowerCase().includes(query)) || 
+        (c.Last_Name && c.Last_Name.toLowerCase().includes(query)) ||
+        (c.Email && c.Email.toLowerCase().includes(query)) ||
+        (c.Acquisition_Source && c.Acquisition_Source.toLowerCase().includes(query)) ||
+        (c.Preferred_Channel && c.Preferred_Channel.toLowerCase().includes(query)) ||
+        (c.Gender && c.Gender.toLowerCase().includes(query)) ||
+        (c.Geo_ID && c.Geo_ID.toLowerCase().includes(query)) ||
+        (c.Status && c.Status.toLowerCase().includes(query))
       );
-      renderCustomerTable(filtered.slice(0, 10));
+      renderCustomerTable(filtered);
     }
 
     function filterProducts() {
-      const query = document.getElementById('prod-search').value.toLowerCase();
+      const query = document.getElementById('prod-search').value.trim().toLowerCase();
+      if (!query) {
+        renderProductTable(productsData.slice(0, 15));
+        return;
+      }
       const filtered = productsData.filter(p => 
-        p.SKU.toLowerCase().includes(query) || 
-        p.Product_Name.toLowerCase().includes(query) ||
-        p.Brand_Name.toLowerCase().includes(query)
+        (p.SKU && p.SKU.toLowerCase().includes(query)) || 
+        (p.Product_Name && p.Product_Name.toLowerCase().includes(query)) ||
+        (p.Brand_Name && p.Brand_Name.toLowerCase().includes(query)) ||
+        (p.Category_Name && p.Category_Name.toLowerCase().includes(query)) ||
+        (p.Subcategory_Name && p.Subcategory_Name.toLowerCase().includes(query)) ||
+        (p.Variant && p.Variant.toLowerCase().includes(query)) ||
+        (p.Product_ID && p.Product_ID.toLowerCase().includes(query)) ||
+        (p.Status && p.Status.toLowerCase().includes(query))
       );
-      renderProductTable(filtered.slice(0, 12));
+      renderProductTable(filtered);
     }
 
     // What-If Simulator Logic
