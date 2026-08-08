@@ -970,7 +970,7 @@
 
           <div class="card">
             <div class="card-header">
-              <div class="card-title"><i class="fa-solid fa-shop"></i> Store Sales Revenue Performance</div>
+              <div class="card-title"><i class="fa-solid fa-map-location-dot"></i> Revenue by Region</div>
             </div>
             <div class="chart-container" style="height:320px">
               <canvas id="chart-sales-region"></canvas>
@@ -1719,33 +1719,33 @@
         chartInstances.invDel.update();
       }
 
-      // 4. Store Sales Revenue Chart by Region (chartInstances.region)
+      // 4. Revenue by Region Chart (chartInstances.region)
       if (chartInstances.region) {
-        const regionalStoreRevenues = {
+        const regionalRevenues = {
           'All': {
-            labels: ['Phoenix Palladium (Mumbai)', 'Select Citywalk (Delhi)', 'UB City (Bengaluru)', 'High Street Phoenix (Mumbai)', 'Phoenix Marketcity (Pune)', 'DLF Promenade (Delhi)', 'Quest Mall (Kolkata)', 'Inorbit Mall (Hyderabad)', 'Express Avenue (Chennai)', 'Lulu Mall (Kochi)'],
-            data: [42.5, 38.2, 35.8, 31.6, 28.4, 28.6, 24.1, 22.6, 21.0, 18.5]
+            labels: ['South Region (8 Stores)', 'West Region (7 Stores)', 'North Region (6 Stores)', 'East Region (3 Stores)'],
+            data: [155.4, 136.0, 116.5, 77.7]
           },
           'North': {
-            labels: ['Select Citywalk (New Delhi)', 'DLF Promenade (New Delhi)', 'Pacific Mall (New Delhi)', 'Lulu Mall (Lucknow)', 'Elante Mall (Chandigarh)'],
-            data: [38.2, 28.6, 22.5, 14.8, 12.4]
+            labels: ['Delhi NCR', 'Haryana', 'Uttar Pradesh', 'Punjab & Chd', 'Rajasthan'],
+            data: [44.3, 30.3, 21.0, 12.8, 8.1]
           },
           'South': {
-            labels: ['UB City (Bengaluru)', 'Inorbit Mall (Hyderabad)', 'Express Avenue (Chennai)', 'Lulu Mall (Kochi)', 'Forum Mall (Bengaluru)', 'VR Chennai (Chennai)', 'Forum Kochi (Kochi)'],
-            data: [35.8, 22.6, 21.0, 18.5, 16.4, 14.2, 12.8]
+            labels: ['Karnataka', 'Tamil Nadu', 'Telangana', 'Kerala', 'Andhra Pradesh'],
+            data: [54.4, 42.0, 34.2, 17.1, 7.7]
           },
           'West': {
-            labels: ['Phoenix Palladium (Mumbai)', 'High Street Phoenix (Mumbai)', 'Phoenix Marketcity (Pune)', 'Seawoods Grand Central (Mumbai)', 'Ahmedabad One (Gujarat)', 'Nexus Ahmedabad'],
-            data: [42.5, 31.6, 28.4, 17.3, 16.2, 12.0]
+            labels: ['Maharashtra', 'Gujarat', 'Goa', 'Dadra & Nagar'],
+            data: [78.9, 43.5, 9.5, 4.1]
           },
           'East': {
-            labels: ['Quest Mall (Kolkata)', 'South City Mall (Kolkata)', 'DB City Mall (Central)', 'Esplanade Mall (Bhubaneswar)'],
-            data: [24.1, 19.8, 18.4, 15.4]
+            labels: ['West Bengal', 'Assam & North East', 'Odisha', 'Bihar', 'Jharkhand'],
+            data: [32.6, 18.6, 12.4, 8.5, 5.6]
           }
         };
-        const storeData = regionalStoreRevenues[reg] || regionalStoreRevenues['All'];
-        chartInstances.region.data.labels = storeData.labels;
-        chartInstances.region.data.datasets[0].data = storeData.data;
+        const regSalesData = regionalRevenues[reg] || regionalRevenues['All'];
+        chartInstances.region.data.labels = regSalesData.labels;
+        chartInstances.region.data.datasets[0].data = regSalesData.data;
         chartInstances.region.update();
       }
 
@@ -2168,48 +2168,36 @@
         });
       }
 
-      // 2. Store Sales Revenue Chart (Horizontal Bar Chart with ₹ Cr Revenue)
+      // 2. Revenue by Region Chart (Sales Revenue in ₹ Cr)
       const ctxRegion = document.getElementById('chart-sales-region');
       if (ctxRegion && !chartInstances.region) {
         chartInstances.region = new Chart(ctxRegion, {
           type: 'bar',
           data: {
-            labels: [
-              'Phoenix Palladium (Mumbai)', 
-              'Select Citywalk (Delhi)', 
-              'UB City (Bengaluru)', 
-              'High Street Phoenix (Mumbai)', 
-              'DLF Promenade (Delhi)',
-              'Phoenix Marketcity (Pune)', 
-              'Quest Mall (Kolkata)', 
-              'Inorbit Mall (Hyderabad)', 
-              'Express Avenue (Chennai)', 
-              'Lulu Mall (Kochi)'
-            ],
+            labels: ['South Region (8 Stores)', 'West Region (7 Stores)', 'North Region (6 Stores)', 'East Region (3 Stores)'],
             datasets: [{
-              label: 'Store Sales Revenue (₹ Cr)',
-              data: [42.5, 38.2, 35.8, 31.6, 28.6, 28.4, 24.1, 22.6, 21.0, 18.5],
-              backgroundColor: '#ff5286',
+              label: 'Sales Revenue (₹ Cr)',
+              data: [155.4, 136.0, 116.5, 77.7],
+              backgroundColor: ['#ff5286', '#ff8dae', '#0284c7', '#10b981'],
               borderRadius: 4
             }]
           },
           options: {
             responsive: true,
             maintainAspectRatio: false,
-            indexAxis: 'y',
             plugins: {
               legend: { position: 'top' },
               tooltip: {
                 callbacks: {
                   label: function(context) {
-                    return ' Revenue: ₹' + context.raw + ' Cr';
+                    return ' Sales Revenue: ₹' + context.raw + ' Cr';
                   }
                 }
               }
             },
             scales: {
-              x: { grid: { color: '#e2e8f0' }, title: { display: true, text: 'Sales Revenue (₹ Cr)' } },
-              y: { grid: { display: false } }
+              y: { grid: { color: '#e2e8f0' }, title: { display: true, text: 'Sales Revenue (₹ Cr)' } },
+              x: { grid: { display: false } }
             }
           }
         });
